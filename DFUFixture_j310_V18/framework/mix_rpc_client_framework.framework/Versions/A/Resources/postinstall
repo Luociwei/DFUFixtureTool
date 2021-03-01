@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Copy dependency (lizmq dylib) to /usr/local/lib.
+# This script is used as postinstall script when installing package
+# and is input of pkgbuild command in the last build phase.
+echo 'copying libzmq to /usr/local/lib/'
+touch ~/.libzmq_copied
+cp -rf /Library/Frameworks/mix_rpc_client_framework.framework/Resources/libzmq*.dylib /usr/local/lib/
+PYTHON_VER=2.7
+INSTALL_PATH=/Library/Python/$PYTHON_VER/site-packages/
+echo 'installing tinyrpcx package to MacOS default site-packages folder: '$INSTALL_PATH
+cp -rf /Library/Frameworks/mix_rpc_client_framework.framework/Resources/tinyrpcx $INSTALL_PATH/
+
+# create symlink for /AppleInternal so previous software could still access the framework from
+# /AppleInternal/Library/Frameworks/
+if [[ -d /AppleInternal ]]
+then
+    ln -sf /Library/Frameworks/mix_rpc_client_framework.framework  /AppleInternal/Library/Frameworks/mix_rpc_client_framework.framework
+fi
+

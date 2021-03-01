@@ -1,0 +1,524 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>tinyrpc.protocols.jsonrpc &#8212; tinyrpcx 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for tinyrpc.protocols.jsonrpc</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RPCBatchProtocol</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RPCRequest</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RPCResponse</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">InvalidRequestError</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">MethodNotFoundError</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">ServerError</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">InvalidReplyError</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RPCError</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RPCBatchRequest</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RPCBatchResponse</span>
+
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">uuid4</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">ujson</span> <span class="k">as</span> <span class="nn">json</span>
+
+<span class="n">SERVER_READY</span> <span class="o">=</span> <span class="s1">&#39;_my_rpc_server_is_ready&#39;</span>
+
+<span class="sd">&#39;&#39;&#39;To extend JSON RPC to create a specialized RPC</span>
+<span class="sd">For JSON RPC, every request has these fields: unique_id, function, args, kwargs, jsonrpc(version)</span>
+<span class="sd">              every response has these fields: unique_id, result | error:{error_code, error_message), jsonrpc(version)</span>
+<span class="sd">              the protocol class does two things: create_request, parse_request(from json string), parse_reply(from json string)</span>
+<span class="sd">              The dispatcher dispatches based on function names, and pass on the *argsand **kwargs.</span>
+
+<span class="sd">Each new rpc protocol would like to have use case specific requests with different signature for the create request function.</span>
+<span class="sd">This should be supported at the protocol layer by mapping these special words to the params and kwarts of the agnostic json rpc</span>
+<span class="sd">request fields. For instance, sequecer calls them verb and line, statemachine calls them event and eventparams, test engine calls</span>
+<span class="sd">them function and params. The protocola layer of these rpc implementation should map these to the generic rpc request (params and kwargs)</span>
+
+<span class="sd">On the response side, if there are more information to pass back than a single result, the result field can have a more complicated</span>
+<span class="sd">data type. The number and names of fields in JSONRPCResponse should not change. Parsing the now complicated result field should</span>
+<span class="sd">be done by the client proxy.</span>
+
+<span class="sd">The client proxy can be customized with port, identity, calls to create_request, etc., to present a more naturally API to the</span>
+<span class="sd">client.</span>
+
+<span class="sd">In creating a specialized rpc, only these should be changed:</span>
+<span class="sd">    at the protocol layer: create_request, parse_request, parse_reply,  the client proxy</span>
+<span class="sd">    request.respond: Normally the request object should not be changed, but this is actually a counterpart</span>
+<span class="sd">                     of parse_reply. The application can return a complicated reply object, request.reply and parse_reply together</span>
+<span class="sd">                     make sure this reply can cross the wire in json.</span>
+<span class="sd">    A derived Request object should be created with a new version and the _to_dict and respond methods customized as necessarily for</span>
+<span class="sd">    complicated data type.</span>
+<span class="sd">These should not change:</span>
+<span class="sd">    the dispatcher, the server, the names and number of the fields of the request and response object.</span>
+<span class="sd">    request.respond and request.error_respond if no complicated data type</span>
+
+<span class="sd">Right now the teproxy and sequencerproxy are not exactly done this way. I will use the statemachine rpc as a reference</span>
+<span class="sd">implementation</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">FixedErrorMessageMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FixedErrorMessageMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">error_respond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">JSONRPCErrorResponse</span><span class="p">()</span>
+
+        <span class="c1"># make sure all RPC internal error has header [RPCError]</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;[RPCError] </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">unique_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">_jsonrpc_error_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jsonrpc_error_code</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCParseError</span><span class="p">(</span><span class="n">FixedErrorMessageMixin</span><span class="p">,</span> <span class="n">InvalidRequestError</span><span class="p">):</span>
+    <span class="n">jsonrpc_error_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32700</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;Parse error&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCInvalidRequestError</span><span class="p">(</span><span class="n">FixedErrorMessageMixin</span><span class="p">,</span> <span class="n">InvalidRequestError</span><span class="p">):</span>
+    <span class="n">jsonrpc_error_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32600</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;Invalid Request&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">JSONRPCInvalidRequestError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>  <span class="c1"># pragma: no cover</span>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCMethodNotFoundError</span><span class="p">(</span><span class="n">FixedErrorMessageMixin</span><span class="p">,</span> <span class="n">MethodNotFoundError</span><span class="p">):</span>
+    <span class="n">jsonrpc_error_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32601</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;Method not found&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">JSONRPCMethodNotFoundError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCInvalidParamsError</span><span class="p">(</span><span class="n">FixedErrorMessageMixin</span><span class="p">,</span> <span class="n">InvalidRequestError</span><span class="p">):</span>
+    <span class="n">jsonrpc_error_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32602</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;Invalid params&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">JSONRPCInvalidParamsError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>  <span class="c1"># pragma: no cover</span>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCInternalError</span><span class="p">(</span><span class="n">FixedErrorMessageMixin</span><span class="p">,</span> <span class="n">InvalidRequestError</span><span class="p">):</span>
+    <span class="n">jsonrpc_error_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32603</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;Internal error&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCServerStopError</span><span class="p">(</span><span class="n">FixedErrorMessageMixin</span><span class="p">,</span> <span class="n">ServerError</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">jsonrpc_error_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32604</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Server Stop Requested&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCServerWorkerUnavailableError</span><span class="p">(</span><span class="n">FixedErrorMessageMixin</span><span class="p">,</span> <span class="n">ServerError</span><span class="p">):</span>
+    <span class="n">jsonrpc_error_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32604</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;No available worker in thread pool&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCTimeoutError</span><span class="p">(</span><span class="n">FixedErrorMessageMixin</span><span class="p">,</span> <span class="n">RPCError</span><span class="p">):</span>
+    <span class="n">jsonrpc_error_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32610</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;Timed out&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">JSONRPCTimeoutError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCServerError</span><span class="p">(</span><span class="n">FixedErrorMessageMixin</span><span class="p">,</span> <span class="n">InvalidRequestError</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">jsonrpc_error_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32000</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">JSONRPCServerError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCPluginError</span><span class="p">(</span><span class="n">FixedErrorMessageMixin</span><span class="p">,</span> <span class="n">InvalidRequestError</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">jsonrpc_error_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32620</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">JSONRPCPluginError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>
+
+
+<div class="viewcode-block" id="JSONRPCSuccessResponse"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCSuccessResponse">[docs]</a><span class="k">class</span> <span class="nc">JSONRPCSuccessResponse</span><span class="p">(</span><span class="n">RPCResponse</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;jsonrpc&#39;</span><span class="p">:</span> <span class="n">JSONRPCProtocol</span><span class="o">.</span><span class="n">JSON_RPC_VERSION</span><span class="p">,</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_id</span><span class="p">,</span>
+            <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">,</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="JSONRPCSuccessResponse.serialize"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCSuccessResponse.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="JSONRPCErrorResponse"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCErrorResponse">[docs]</a><span class="k">class</span> <span class="nc">JSONRPCErrorResponse</span><span class="p">(</span><span class="n">RPCResponse</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;jsonrpc&#39;</span><span class="p">:</span> <span class="n">JSONRPCProtocol</span><span class="o">.</span><span class="n">JSON_RPC_VERSION</span><span class="p">,</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_id</span><span class="p">,</span>
+            <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">),</span>
+                <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jsonrpc_error_code</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="JSONRPCErrorResponse.serialize"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCErrorResponse.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">())</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_get_code_and_message</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">basestring</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="s1">&#39;jsonrpc_error_code&#39;</span><span class="p">):</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">jsonrpc_error_code</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">InvalidRequestError</span><span class="p">):</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">JSONRPCInvalidRequestError</span><span class="o">.</span><span class="n">jsonrpc_error_code</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">JSONRPCInvalidRequestError</span><span class="o">.</span><span class="n">message</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">MethodNotFoundError</span><span class="p">):</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">JSONRPCMethodNotFoundError</span><span class="o">.</span><span class="n">jsonrpc_error_code</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">JSONRPCMethodNotFoundError</span><span class="o">.</span><span class="n">message</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># allow exception message to propagate</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">JSONRPCServerError</span><span class="o">.</span><span class="n">jsonrpc_error_code</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32000</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">error</span>
+
+    <span class="k">return</span> <span class="n">code</span><span class="p">,</span> <span class="n">msg</span>
+
+
+<div class="viewcode-block" id="JSONRPCRequest"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCRequest">[docs]</a><span class="k">class</span> <span class="nc">JSONRPCRequest</span><span class="p">(</span><span class="n">RPCRequest</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONRPCRequest.error_respond"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCRequest.error_respond">[docs]</a>    <span class="k">def</span> <span class="nf">error_respond</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># pragma: no cover</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">JSONRPCErrorResponse</span><span class="p">()</span>
+
+        <span class="n">code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32000</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="s1">&#39;jsonrpc_error_code&#39;</span><span class="p">):</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">jsonrpc_error_code</span>
+
+        <span class="c1"># make sure all RPC internal error has header [RPCError]</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;[RPCError] </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">unique_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_id</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">_jsonrpc_error_code</span> <span class="o">=</span> <span class="n">code</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="JSONRPCRequest.respond"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCRequest.respond">[docs]</a>    <span class="k">def</span> <span class="nf">respond</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">JSONRPCSuccessResponse</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">response</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">unique_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_id</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">method</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">jdata</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;jsonrpc&#39;</span><span class="p">:</span> <span class="n">JSONRPCProtocol</span><span class="o">.</span><span class="n">JSON_RPC_VERSION</span><span class="p">,</span>
+            <span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">jdata</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">jdata</span><span class="p">[</span><span class="s1">&#39;kwargs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_id</span><span class="p">:</span>
+            <span class="n">jdata</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_id</span>
+        <span class="k">return</span> <span class="n">jdata</span>
+
+<div class="viewcode-block" id="JSONRPCRequest.serialize"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCRequest.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">())</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCBatchRequest</span><span class="p">(</span><span class="n">RPCBatchRequest</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create_batch_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expects_response</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">JSONRPCBatchResponse</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_expects_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">unique_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">req</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+
+
+<span class="k">class</span> <span class="nc">JSONRPCBatchResponse</span><span class="p">(</span><span class="n">RPCBatchResponse</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">resp</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">resp</span><span class="p">])</span>  <span class="c1"># pragma: no cover</span>
+
+
+<div class="viewcode-block" id="JSONRPCProtocol"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCProtocol">[docs]</a><span class="k">class</span> <span class="nc">JSONRPCProtocol</span><span class="p">(</span><span class="n">RPCBatchProtocol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;JSONRPC protocol implementation.</span>
+
+<span class="sd">    Currently, only version 2.0 is supported.&quot;&quot;&quot;</span>
+
+    <span class="n">JSON_RPC_VERSION</span> <span class="o">=</span> <span class="s2">&quot;2.0&quot;</span>
+    <span class="n">_ALLOWED_REPLY_KEYS</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;jsonrpc&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;result&#39;</span><span class="p">])</span>
+    <span class="n">_ALLOWED_REQUEST_KEYS</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;jsonrpc&#39;</span><span class="p">,</span> <span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="s1">&#39;args&#39;</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">JSONRPCProtocol</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id_counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">_get_unique_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
+
+<div class="viewcode-block" id="JSONRPCProtocol.create_batch_request"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCProtocol.create_batch_request">[docs]</a>    <span class="k">def</span> <span class="nf">create_batch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">JSONRPCBatchRequest</span><span class="p">(</span><span class="n">requests</span> <span class="ow">or</span> <span class="p">[])</span>  <span class="c1"># pragma: no cover</span></div>
+
+<div class="viewcode-block" id="JSONRPCProtocol.create_request"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCProtocol.create_request">[docs]</a>    <span class="k">def</span> <span class="nf">create_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        method: string of methon name</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">JSONRPCRequest</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;one_way&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">unique_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_unique_id</span><span class="p">()</span>
+
+        <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+
+        <span class="n">request</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;callback&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;callback&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">kwargs</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;callback&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">request</span></div>
+
+<div class="viewcode-block" id="JSONRPCProtocol.parse_reply"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCProtocol.parse_reply">[docs]</a>    <span class="k">def</span> <span class="nf">parse_reply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidReplyError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">rep</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALLOWED_REPLY_KEYS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidReplyError</span><span class="p">(</span><span class="s1">&#39;Key not allowed: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;jsonrpc&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rep</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidReplyError</span><span class="p">(</span><span class="s1">&#39;Missing jsonrpc (version) in response.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rep</span><span class="p">[</span><span class="s1">&#39;jsonrpc&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">JSON_RPC_VERSION</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidReplyError</span><span class="p">(</span><span class="s1">&#39;Wrong JSONRPC version&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rep</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidReplyError</span><span class="p">(</span><span class="s1">&#39;Missing id in response&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">rep</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;result&#39;</span> <span class="ow">in</span> <span class="n">rep</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidReplyError</span><span class="p">(</span>
+                <span class="s1">&#39;Reply must contain exactly one of result and error.&#39;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">rep</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">JSONRPCErrorResponse</span><span class="p">()</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">rep</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">error</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">_jsonrpc_error_code</span> <span class="o">=</span> <span class="n">error</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">JSONRPCSuccessResponse</span><span class="p">()</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">rep</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">)</span>
+
+        <span class="n">response</span><span class="o">.</span><span class="n">unique_id</span> <span class="o">=</span> <span class="n">rep</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="JSONRPCProtocol.parse_request"><a class="viewcode-back" href="../../../protocols.html#tinyrpc.protocols.jsonrpc.JSONRPCProtocol.parse_request">[docs]</a>    <span class="k">def</span> <span class="nf">parse_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># logging.error(&#39;{}&#39;.format(traceback.format_exc()))</span>
+            <span class="k">raise</span> <span class="n">JSONRPCParseError</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># batch request</span>
+            <span class="n">requests</span> <span class="o">=</span> <span class="n">JSONRPCBatchRequest</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">subreq</span> <span class="ow">in</span> <span class="n">req</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">requests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_subrequest</span><span class="p">(</span><span class="n">subreq</span><span class="p">))</span>
+                <span class="k">except</span> <span class="n">RPCError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">requests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">requests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">JSONRPCInvalidRequestError</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">requests</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">JSONRPCInvalidRequestError</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">requests</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_subrequest</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_parse_subrequest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">req</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALLOWED_REQUEST_KEYS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">JSONRPCInvalidRequestError</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;jsonrpc&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">JSON_RPC_VERSION</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">JSONRPCInvalidRequestError</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">req</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">],</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">JSONRPCInvalidRequestError</span><span class="p">()</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="n">JSONRPCRequest</span><span class="p">()</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">req</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">])</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">unique_id</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;args&#39;</span> <span class="ow">in</span> <span class="n">req</span><span class="p">:</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">req</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;kwargs&#39;</span> <span class="ow">in</span> <span class="n">req</span><span class="p">:</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">req</span><span class="p">[</span><span class="s1">&#39;kwargs&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">request</span>
+
+    <span class="k">def</span> <span class="nf">stop_respond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">JSONRPCSuccessResponse</span><span class="p">()</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">unique_id</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;PASS&#39;</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">def</span> <span class="nf">error_respond</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">original_request</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">JSONRPCErrorResponse</span><span class="p">()</span>
+
+        <span class="n">code</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">jsonrpc_error_code</span>
+
+        <span class="c1"># make sure all RPC internal error has header [RPCError]</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;[RPCError] </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">original_request</span><span class="p">:</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">unique_id</span> <span class="o">=</span> <span class="n">original_request</span><span class="o">.</span><span class="n">unique_id</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">_jsonrpc_error_code</span> <span class="o">=</span> <span class="n">code</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">tinyrpcx</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpc_server.html">RPC Server Wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../protocols.html">Jsonrpc Protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../transports.html">Zmq Transport</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../client.html">RPC Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server.html">RPC Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dispatch.html">RPC Dispatcher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, HWTE-SW ASIA APPLE.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

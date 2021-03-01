@@ -1,0 +1,237 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>RPC Server &#8212; tinyrpcx 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="RPC Dispatcher" href="dispatch.html" />
+    <link rel="prev" title="RPC Client" href="client.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-tinyrpc.server">
+<span id="rpc-server"></span><h1>RPC Server<a class="headerlink" href="#module-tinyrpc.server" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="tinyrpc.server.RPCServer">
+<em class="property">class </em><code class="descclassname">tinyrpc.server.</code><code class="descname">RPCServer</code><span class="sig-paren">(</span><em>transport</em>, <em>protocol</em>, <em>dispatcher</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/server.html#RPCServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.server.RPCServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>High level RPC server.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>transport</strong> – The <code class="xref py py-class docutils literal notranslate"><span class="pre">RPCTransport</span></code> to use.</li>
+<li><strong>protocol</strong> – The <code class="xref py py-class docutils literal notranslate"><span class="pre">RPCProtocol</span></code> to use.</li>
+<li><strong>dispatcher</strong> – The <a class="reference internal" href="dispatch.html#tinyrpc.dispatch.RPCDispatcher" title="tinyrpc.dispatch.RPCDispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">RPCDispatcher</span></code></a> to use.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="tinyrpc.server.RPCServer.generate_profile_result">
+<code class="descname">generate_profile_result</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/server.html#RPCServer.generate_profile_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.server.RPCServer.generate_profile_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a dict of profile result including RTT and each phase data</p>
+<p>input:</p>
+<blockquote>
+<div><p>self.profile_result</p>
+<p>format: {</p>
+<blockquote>
+<div><blockquote>
+<div><p>‘uid1’: {‘start’: time1, ‘create_request’, time2, …},</p>
+<p>‘uid2’: {‘start’: time1, ‘create_request’, time2, …},</p>
+<p>,…</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+</div></blockquote>
+<dl class="docutils">
+<dt>process: get list of sorted key by sorting the time to determine sequence;</dt>
+<dd><blockquote class="first">
+<div>like [start, create_request, serialize, transport, parse_reply]</div></blockquote>
+<p>Then calculate each stage time by minus action:</p>
+<blockquote class="last">
+<div><p>t_create_request = result[‘create_request’] - result[‘start’]</p>
+<p>t_serialize = result[‘serialize’] - result[‘create_request’]</p>
+</div></blockquote>
+</dd>
+</dl>
+<p>output: dict as follow so user could calculate avg/rms/other statistics.</p>
+<blockquote>
+<div><p>{</p>
+<blockquote>
+<div><p>‘keys’: [SORTED_POINT1, SORTED_POINT2, …],</p>
+<p>‘POINT1’: [DATA1, DATA2, …],</p>
+<p>‘POINT2’: [DATA1, DATA2, …],</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.server.RPCServer.handle_message_no_profile">
+<code class="descname">handle_message_no_profile</code><span class="sig-paren">(</span><em>context</em>, <em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/server.html#RPCServer.handle_message_no_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.server.RPCServer.handle_message_no_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle received message supporting parallel task in threadpool.
+This function parses the msg first, and submit task to threadpool.
+The threadpool worker dispatches the method in daemon thread.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>context</strong> – string, zmq socket channel id</li>
+<li><strong>msg</strong> – string, mag string, is a serialized string from JSONRPCRequest format data</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.server.RPCServer.profile_wrapper">
+<code class="descname">profile_wrapper</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/server.html#RPCServer.profile_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.server.RPCServer.profile_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper function to generated a profiled-version of given function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.server.RPCServer.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/server.html#RPCServer.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.server.RPCServer.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle requests forever.</p>
+<p>Starts the server loop in which the transport will be polled for a new
+message.</p>
+<p>After a new message has arrived,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">_spawn()</span></code> is called with a handler
+function and arguments to handle the request.</p>
+<p>The handler function will try to decode the message using the supplied
+protocol, if that fails, an error response will be sent. After decoding
+the message, the dispatcher will be asked to handle the resultung
+request and the return value (either an error or a result) will be sent
+back to the client using the transport.</p>
+<p>After calling <code class="xref py py-func docutils literal notranslate"><span class="pre">_spawn()</span></code>, the server
+will fetch the next message and repeat.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.server.RPCServer.set_profile">
+<code class="descname">set_profile</code><span class="sig-paren">(</span><em>breakdown</em>, <em>rtt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/server.html#RPCServer.set_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.server.RPCServer.set_profile" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>breakdown</strong> – whether to profile each func call using cProfile</li>
+<li><strong>rtt</strong> – whether record start and end of server handling time.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Do not return anything.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">tinyrpcx</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rpc_server.html">RPC Server Wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Jsonrpc Protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transports.html">Zmq Transport</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">RPC Client</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">RPC Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dispatch.html">RPC Dispatcher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="client.html" title="previous chapter">RPC Client</a></li>
+      <li>Next: <a href="dispatch.html" title="next chapter">RPC Dispatcher</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, HWTE-SW ASIA APPLE.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/server.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

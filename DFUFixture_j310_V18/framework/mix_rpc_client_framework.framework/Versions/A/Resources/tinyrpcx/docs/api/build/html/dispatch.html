@@ -1,0 +1,302 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>RPC Dispatcher &#8212; tinyrpcx 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="RPC Server" href="server.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-tinyrpc.dispatch">
+<span id="rpc-dispatcher"></span><h1>RPC Dispatcher<a class="headerlink" href="#module-tinyrpc.dispatch" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="tinyrpc.dispatch.RPCDispatcher">
+<em class="property">class </em><code class="descclassname">tinyrpc.dispatch.</code><code class="descname">RPCDispatcher</code><a class="reference internal" href="_modules/tinyrpc/dispatch.html#RPCDispatcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.dispatch.RPCDispatcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores name-to-method mappings.</p>
+<dl class="method">
+<dt id="tinyrpc.dispatch.RPCDispatcher.add_method">
+<code class="descname">add_method</code><span class="sig-paren">(</span><em>f</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/dispatch.html#RPCDispatcher.add_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.dispatch.RPCDispatcher.add_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a method to the dispatcher.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>f</strong> – Callable to be added.</li>
+<li><strong>name</strong> – Name to register it with. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">f.__name__</span></code> will
+be used.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.dispatch.RPCDispatcher.add_subdispatch">
+<code class="descname">add_subdispatch</code><span class="sig-paren">(</span><em>dispatcher</em>, <em>prefix=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/dispatch.html#RPCDispatcher.add_subdispatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.dispatch.RPCDispatcher.add_subdispatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a subdispatcher, possibly in its own namespace.
+It raises Error if the method under registering already exists in
+current subdispatcher w/ the same prefix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dispatcher</strong> – The dispatcher to add as a subdispatcher.</li>
+<li><strong>prefix</strong> – A prefix. All of the new subdispatchers methods will be
+available as prefix + their original name.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.dispatch.RPCDispatcher.all_methods">
+<code class="descname">all_methods</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/dispatch.html#RPCDispatcher.all_methods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.dispatch.RPCDispatcher.all_methods" title="Permalink to this definition">¶</a></dt>
+<dd><p>return all registered methods in dictionary with proxy being key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample return:</th><td class="field-body">{“”: [“sleep”, “measure”], “driver”: [“fun”, “echo”]}</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.dispatch.RPCDispatcher.dispatch">
+<code class="descname">dispatch</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/dispatch.html#RPCDispatcher.dispatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.dispatch.RPCDispatcher.dispatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fully handle request.</p>
+<p>The dispatch method determines which method to call, calls it and
+returns a response containing a result.</p>
+<p>No exceptions will be thrown, rather, every exception will be turned
+into a response using <code class="xref py py-func docutils literal notranslate"><span class="pre">error_respond()</span></code>.</p>
+<p>If a method isn’t found, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">MethodNotFoundError</span></code>
+response will be returned. If any error occurs outside of the requested
+method, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">ServerError</span></code> without any error
+information will be returend.</p>
+<p>If the method is found and called but throws an exception, the
+exception thrown is used as a response instead. This is the only case
+in which information from the exception is possibly propagated back to
+the client, as the exception is part of the requested method.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">RPCBatchRequest</span></code> instances are handled by handling
+all its children in order and collecting the results, then returning an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RPCBatchResponse</span></code> with the results.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> – An <code class="xref py py-func docutils literal notranslate"><span class="pre">RPCRequest()</span></code>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An <code class="xref py py-func docutils literal notranslate"><span class="pre">RPCResponse()</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.dispatch.RPCDispatcher.get_method">
+<code class="descname">get_method</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/dispatch.html#RPCDispatcher.get_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.dispatch.RPCDispatcher.get_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a previously registered method.</p>
+<p>Checks if a method matching <code class="docutils literal notranslate"><span class="pre">name</span></code> has been registered.</p>
+<p>If <a class="reference internal" href="#tinyrpc.dispatch.RPCDispatcher.get_method" title="tinyrpc.dispatch.RPCDispatcher.get_method"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_method()</span></code></a> cannot find a method, every subdispatcher
+with a prefix matching the method name is checked as well.</p>
+<p>If a method isn’t found, a <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> is thrown.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> – Callable to find.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.dispatch.RPCDispatcher.get_public">
+<code class="descname">get_public</code><span class="sig-paren">(</span><em>obj</em>, <em>prefix=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/dispatch.html#RPCDispatcher.get_public"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.dispatch.RPCDispatcher.get_public" title="Permalink to this definition">¶</a></dt>
+<dd><p>get function name and pointer of functions marked with &#64;public decorator
+Will search recersively into member variables.
+a.b.fun() –&gt; ‘b_fun’
+a.fun() –&gt; ‘fun’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.dispatch.RPCDispatcher.public">
+<code class="descname">public</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/dispatch.html#RPCDispatcher.public"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.dispatch.RPCDispatcher.public" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenient decorator.</p>
+<p>Allows easy registering of functions to this dispatcher. Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dispatch</span> <span class="o">=</span> <span class="n">RPCDispatcher</span><span class="p">()</span>
+
+<span class="nd">@dispatch.public</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">bar</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">Baz</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">not_exposed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+
+    <span class="nd">@dispatch.public</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;do_something&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">visible_method</span><span class="p">(</span><span class="n">arg1</span><span class="p">)</span>
+        <span class="c1"># ...</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> – Name to register callable with</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.dispatch.RPCDispatcher.register_instance">
+<code class="descname">register_instance</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/dispatch.html#RPCDispatcher.register_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.dispatch.RPCDispatcher.register_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new subdispatcher and register all public object methods on
+it.</p>
+<p>To be used in conjunction with the <a class="reference internal" href="#tinyrpc.dispatch.public" title="tinyrpc.dispatch.public"><code class="xref py py-func docutils literal notranslate"><span class="pre">tinyrpc.dispatch.public()</span></code></a>
+decorator (<em>not</em> <a class="reference internal" href="#tinyrpc.dispatch.RPCDispatcher.public" title="tinyrpc.dispatch.RPCDispatcher.public"><code class="xref py py-func docutils literal notranslate"><span class="pre">tinyrpc.dispatch.RPCDispatcher.public()</span></code></a>).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>obj</strong> – The object whose public methods should be made available.</li>
+<li><strong>prefix</strong> – A prefix for the new subdispatcher.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tinyrpc.dispatch.public">
+<code class="descclassname">tinyrpc.dispatch.</code><code class="descname">public</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/dispatch.html#public"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.dispatch.public" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set RPC name on function.</p>
+<p>This function decorator will set the <code class="docutils literal notranslate"><span class="pre">_rpc_public_name</span></code> attribute on a
+function, causing it to be picked up if an instance of its parent class is
+registered using
+<a class="reference internal" href="#tinyrpc.dispatch.RPCDispatcher.register_instance" title="tinyrpc.dispatch.RPCDispatcher.register_instance"><code class="xref py py-func docutils literal notranslate"><span class="pre">register_instance()</span></code></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;public</span></code> is a shortcut for <code class="docutils literal notranslate"><span class="pre">&#64;public()</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> – The name to register the function with.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">tinyrpcx</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rpc_server.html">RPC Server Wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Jsonrpc Protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transports.html">Zmq Transport</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">RPC Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">RPC Server</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">RPC Dispatcher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="server.html" title="previous chapter">RPC Server</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, HWTE-SW ASIA APPLE.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/dispatch.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

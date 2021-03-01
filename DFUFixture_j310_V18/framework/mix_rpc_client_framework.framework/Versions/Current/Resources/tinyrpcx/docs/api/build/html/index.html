@@ -1,0 +1,186 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to tinyrpcX’s documentation! &#8212; tinyrpcx 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="RPC Server Wrapper" href="rpc_server.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-tinyrpcx-s-documentation">
+<h1>Welcome to tinyrpcX’s documentation!<a class="headerlink" href="#welcome-to-tinyrpcx-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>tinyrpcx is python module designed for supporting remote process control with customized protocol. Powered by zmq router-dealer socket,
+tinrpcX can support both synchronization and asynchronization application.</p>
+<div class="section" id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>Tinyrpx provides simple entrance for set up a RPCClient or RPCServer. All you need to do is to import the RPCClient/RPCServer wrapper,
+and initialize a RPCClientWrapper/RPCServerWrapper instance.</p>
+<div class="section" id="a-client-working-on-localhost">
+<h3>A Client working on localhost<a class="headerlink" href="#a-client-working-on-localhost" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zmq</span>
+<span class="kn">from</span> <span class="nn">tinyrpc.rpc_client</span> <span class="kn">import</span> <span class="n">RPCClientWrapper</span>
+<span class="kn">from</span> <span class="nn">publisher</span> <span class="kn">import</span> <span class="n">ZmqPublisher</span>
+
+<span class="n">publisher</span> <span class="o">=</span> <span class="n">ZmqPublisher</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">Context</span><span class="p">(),</span> <span class="s2">&quot;tcp://127.0.0.1:6050&quot;</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">RPCClientWrapper</span><span class="p">({</span><span class="s2">&quot;requester&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp://127.0.0.1:6000&quot;</span><span class="p">,</span> <span class="s2">&quot;receiver&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp://127.0.0.1:16000&quot;</span><span class="p">},</span> <span class="n">publisher</span><span class="p">)</span>
+
+<span class="c1"># get rpc service proxy &amp; make a call</span>
+<span class="n">client_dummy</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_proxy</span><span class="p">(</span><span class="s1">&#39;DummyRPCService&#39;</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;dummy&#39;</span><span class="p">)</span>
+<span class="c1"># a sleep function is registered at server side in DummyRPCService class</span>
+<span class="n">ret</span> <span class="o">=</span> <span class="n">client_dummy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-server-working-on-localhost">
+<h3>A Server working on localhost<a class="headerlink" href="#a-server-working-on-localhost" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zmq</span>
+<span class="kn">from</span> <span class="nn">tinyrpc.rpc_server</span> <span class="kn">import</span> <span class="n">RPCServerWrapper</span>
+<span class="kn">from</span> <span class="nn">publisher</span> <span class="kn">import</span> <span class="n">ZmqPublisher</span>
+<span class="kn">from</span> <span class="nn">DummyRPCService</span> <span class="kn">import</span> <span class="n">DummyRPCService</span>
+
+<span class="n">publisher</span> <span class="o">=</span> <span class="n">ZmqPublisher</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">Context</span><span class="p">(),</span> <span class="s2">&quot;tcp://127.0.0.1:7050&quot;</span><span class="p">)</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">RPCServerWrapper</span><span class="p">({</span><span class="s2">&quot;receiver&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp://127.0.0.1:6000&quot;</span><span class="p">,</span> <span class="s2">&quot;replier&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp://127.0.0.1:16000&quot;</span><span class="p">},</span> <span class="n">publisher</span><span class="p">)</span>
+
+<span class="c1"># register some rpc service</span>
+<span class="n">service</span> <span class="o">=</span> <span class="n">DummyRPCService</span><span class="p">()</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="sub-modules-working-in-tinyrpcx">
+<h2>Sub modules working in tinyrpcx<a class="headerlink" href="#sub-modules-working-in-tinyrpcx" title="Permalink to this headline">¶</a></h2>
+<p>Looking into the wrapper, tinyrpcx can be devided to serveral function modules: client, server, protocols, dispatch, transports.</p>
+<p><a class="reference internal" href="client.html"><span class="doc">RPC Client</span></a> is the main class for the rpc client. It provides the high-level API for users to make rpc call and get the results.
+All the rpc service can be encapsulated into a <cite>RPCProxy</cite>, and working just like a local call in the client applciations.
+To support asynchronization, a <cite>ClientReceiver</cite> is indenpently working in a daemon thread and keeplistening to the msg from server.</p>
+<p><a class="reference internal" href="server.html"><span class="doc">RPC Server</span></a> is the main entrance for a rpc server. RPCServer will start to work as soon as it is initialized through the <cite>RPCServerWrapper</cite>.
+Any msg received from client will be parsed to find out if it is complied to the protocol and if there’s avaiable services can be dispatched for the msg.
+API <cite>register_instance</cite> is designed to register the service instance into the server dispatching service.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># register service with prefix</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="s1">&#39;driver&#39;</span><span class="p">)</span>
+<span class="c1"># register a group of services by a dictionary</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register</span><span class="p">({</span><span class="n">driver</span><span class="p">:</span> <span class="s1">&#39;driver1&#39;</span><span class="p">,</span> <span class="n">driver</span><span class="p">:</span> <span class="s1">&#39;driver2&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>tinyrpcx uses <a class="reference internal" href="protocols.html"><span class="doc">Jsonrpc Protocol</span></a> as default messgage protocol. Jsonrpc protocol uses json key-value pairs to define the required paramters for a rpc call.
+The protocol defines the structure for JSONRPCRequest, JSONRPCResponse and JSONRPCError.</p>
+<p>tinyrpcx uses <a class="reference internal" href="transports.html"><span class="doc">Zmq Transport</span></a> to do the socket management for data transmission. To support both both synchronization and asynchronization applicaiton,
+the sockets is set as zmq.ROUTER for server, and zmq.DEALER for client.</p>
+</div>
+</div>
+<div class="section" id="api-reference-for-modules">
+<h1>API Reference for modules<a class="headerlink" href="#api-reference-for-modules" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="rpc_server.html">RPC Server Wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Jsonrpc Protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transports.html">Zmq Transport</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">RPC Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">RPC Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dispatch.html">RPC Dispatcher</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">tinyrpcx</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="rpc_server.html">RPC Server Wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Jsonrpc Protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transports.html">Zmq Transport</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">RPC Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">RPC Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dispatch.html">RPC Dispatcher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="rpc_server.html" title="next chapter">RPC Server Wrapper</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, HWTE-SW ASIA APPLE.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

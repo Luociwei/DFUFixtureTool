@@ -1,0 +1,319 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>tinyrpc.transports.zmq &#8212; tinyrpcx 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for tinyrpc.transports.zmq</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>  <span class="c1"># needed for zmq import</span>
+<span class="kn">import</span> <span class="nn">zmq</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Thread</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Lock</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">HEARTBEAT_INTERVAL_S</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">ZMQ_POLL_INTERVAL_MS</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">FCT_HEARTBEAT</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">DONE</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">ERROR</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">DBG_CHANNEL</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">DEFAULT_RPC_TIMEOUT_MS</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">ServerTransport</span><span class="p">,</span> <span class="n">ClientTransport</span>
+
+
+<div class="viewcode-block" id="ZmqServerTransport"><a class="viewcode-back" href="../../../transports.html#tinyrpc.transports.zmq.ZmqServerTransport">[docs]</a><span class="k">class</span> <span class="nc">ZmqServerTransport</span><span class="p">(</span><span class="n">ServerTransport</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Server transport based on a :py:const:`zmq.ROUTER` socket.</span>
+
+<span class="sd">    :param recv_ocket: A :py:const:`zmq.ROUTER` socket instance, bound to an</span>
+<span class="sd">                   endpoint for receiving request.</span>
+<span class="sd">    :param reply_socket: A :py:const:`zmq.ROUTER` socket instance, bound to an</span>
+
+<span class="sd">                   endpoint for sending reply;</span>
+
+<span class="sd">    Reason to have 2 separate sockets is ZMQ sockets are non-thread-safe;</span>
+<span class="sd">        If we are to separate sending and receving in 2 threads, each thread</span>
+<span class="sd">        must have its own socket or zmq could crash.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recv_socket</span><span class="p">,</span> <span class="n">reply_socket</span><span class="p">,</span> <span class="n">poll_time_ms</span><span class="o">=</span><span class="n">ZMQ_POLL_INTERVAL_MS</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span> <span class="o">=</span> <span class="n">recv_socket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reply_socket</span> <span class="o">=</span> <span class="n">reply_socket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">poller</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">Poller</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="p">,</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">poll_time_ms</span> <span class="o">=</span> <span class="n">poll_time_ms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_at</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="c1"># use global default logger as default; will be overrided when creating server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="c1"># to control whether to do transport level server logging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_logging</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_at</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">HEARTBEAT_INTERVAL_S</span>
+        <span class="c1"># TODO: HB shall be out per 5sec or only needed as NOP when PUB idle?</span>
+
+    <span class="k">def</span> <span class="nf">check_heartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">t_now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">t_now</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_at</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">FCT_HEARTBEAT</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ZmqServerTransport.receive_message"><a class="viewcode-back" href="../../../transports.html#tinyrpc.transports.zmq.ZmqServerTransport.receive_message">[docs]</a>    <span class="k">def</span> <span class="nf">receive_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poll_time_ms</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Asynchronous poll socket&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">poll_time_ms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">poll_time_ms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">poll_time_ms</span>
+        <span class="n">socks</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">poller</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="n">poll_time_ms</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">socks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="p">)</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">:</span>
+            <span class="n">context</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">recv_multipart</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_logging</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2048</span><span class="p">:</span>
+                    <span class="n">b_message</span> <span class="o">=</span> <span class="n">message</span><span class="p">[:</span><span class="mi">2045</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">b_message</span> <span class="o">=</span> <span class="n">message</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;received: </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">b_message</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">context</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">context</span><span class="p">,</span> <span class="n">message</span></div>
+
+    <span class="k">def</span> <span class="nf">send_reply_with_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">reply</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_reply</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">reply</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ZmqServerTransport.send_reply"><a class="viewcode-back" href="../../../transports.html#tinyrpc.transports.zmq.ZmqServerTransport.send_reply">[docs]</a>    <span class="k">def</span> <span class="nf">send_reply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">reply</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reply_socket</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">([</span><span class="n">context</span><span class="p">,</span> <span class="n">reply</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_logging</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reply</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2048</span><span class="p">:</span>
+                <span class="n">b_message</span> <span class="o">=</span> <span class="n">reply</span><span class="p">[:</span><span class="mi">2045</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">b_message</span> <span class="o">=</span> <span class="n">reply</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;sent: </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">b_message</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ZmqServerTransport.create"><a class="viewcode-back" href="../../../transports.html#tinyrpc.transports.zmq.ZmqServerTransport.create">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">zmq_context</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">poll_time_ms</span><span class="o">=</span><span class="n">ZMQ_POLL_INTERVAL_MS</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create new server transport.</span>
+
+<span class="sd">        Instead of creating the socket yourself, you can call this function and</span>
+<span class="sd">        merely pass the :py:class:`zmq.core.context.Context` instance.</span>
+
+<span class="sd">        By passing a context imported from :py:mod:`zmq.green`, you can use</span>
+<span class="sd">        green (gevent) 0mq sockets as well.</span>
+
+<span class="sd">        :param zmq_context: A 0mq context.</span>
+<span class="sd">        :param endpoint: The endpoint clients will connect to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">recv_socket</span> <span class="o">=</span> <span class="n">zmq_context</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">ROUTER</span><span class="p">)</span>
+        <span class="n">reply_socket</span> <span class="o">=</span> <span class="n">zmq_context</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">ROUTER</span><span class="p">)</span>
+        <span class="n">recv_socket</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">endpoint</span><span class="p">[</span><span class="s1">&#39;receiver&#39;</span><span class="p">])</span>
+        <span class="n">reply_socket</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">endpoint</span><span class="p">[</span><span class="s1">&#39;replier&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">recv_socket</span><span class="p">,</span> <span class="n">reply_socket</span><span class="p">,</span> <span class="n">poll_time_ms</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">LINGER</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">reply_socket</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reply_socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">LINGER</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reply_socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ZmqClientTransport"><a class="viewcode-back" href="../../../transports.html#tinyrpc.transports.zmq.ZmqClientTransport">[docs]</a><span class="k">class</span> <span class="nc">ZmqClientTransport</span><span class="p">(</span><span class="n">ClientTransport</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Client transport based on a :py:const:`zmq.REQ` socket.</span>
+
+<span class="sd">    :param send_socket: A :py:const:`zmq.REQ` socket instance, connected to the</span>
+<span class="sd">                   server socket for sending request.</span>
+<span class="sd">    :param recv_socket: A :py:const:`zmq.ROUTER` socket instance, bound to an</span>
+<span class="sd">                   endpoint for receiving response;</span>
+<span class="sd">    :param zmq_context: A 0mq context.</span>
+<span class="sd">    :param endpoint: The endpoint the server is bound to.</span>
+
+<span class="sd">    Reason to have 2 separate sockets is ZMQ sockets are non-thread-safe;</span>
+<span class="sd">        If we are to separate sending and receving in 2 threads, each thread</span>
+<span class="sd">        must have its own socket or zmq could crash.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">send_socket</span><span class="p">,</span> <span class="n">recv_socket</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout_ms</span><span class="o">=</span><span class="n">DEFAULT_RPC_TIMEOUT_MS</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_socket</span> <span class="o">=</span> <span class="n">send_socket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span> <span class="o">=</span> <span class="n">recv_socket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">=</span> <span class="n">endpoint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_timeout_ms</span> <span class="o">=</span> <span class="n">timeout_ms</span>
+
+    <span class="k">def</span> <span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">LINGER</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">LINGER</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">DEALER</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">DEALER</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">IDENTITY</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">IDENTITY</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">endpoint</span><span class="p">[</span><span class="s1">&#39;requester&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">endpoint</span><span class="p">[</span><span class="s1">&#39;receiver&#39;</span><span class="p">])</span>
+        <span class="c1"># sleep 0.5s to make sure socket connection finish</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ZmqClientTransport.send_message"><a class="viewcode-back" href="../../../transports.html#tinyrpc.transports.zmq.ZmqClientTransport.send_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">receive_reply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poll_time_ms</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">poll</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">Poller</span><span class="p">()</span>
+        <span class="n">poll</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="p">,</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">)</span>
+        <span class="n">socks</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">poll</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="n">poll_time_ms</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">socks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="p">)</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">:</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            # potential risk; keep for the moment.</span>
+<span class="sd">            poll.unregister(self.socket)</span>
+<span class="sd">            # reconnect socket otherwise ZMQ socket stuck in unusable state</span>
+<span class="sd">            self.reconnect()</span>
+<span class="sd">            poll.register(self.socket, zmq.POLLIN)</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="n">reply</span>
+
+    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_socket</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">LINGER</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">LINGER</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recv_socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ZmqClientTransport.create"><a class="viewcode-back" href="../../../transports.html#tinyrpc.transports.zmq.ZmqClientTransport.create">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">zmq_context</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create new client transport.</span>
+
+<span class="sd">        Instead of creating the socket yourself, you can call this function and</span>
+<span class="sd">        merely pass the :py:class:`zmq.core.context.Context` instance.</span>
+
+<span class="sd">        By passing a context imported from :py:mod:`zmq.green`, you can use</span>
+<span class="sd">        green (gevent) 0mq sockets as well.</span>
+
+<span class="sd">        :param zmq_context: A 0mq context.</span>
+<span class="sd">        :param endpoint: The endpoints the server is bound to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">send_socket</span> <span class="o">=</span> <span class="n">zmq_context</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">DEALER</span><span class="p">)</span>
+        <span class="n">recv_socket</span> <span class="o">=</span> <span class="n">zmq_context</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">DEALER</span><span class="p">)</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
+        <span class="n">send_socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">IDENTITY</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="n">recv_socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">IDENTITY</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="n">send_socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">endpoint</span><span class="p">[</span><span class="s1">&#39;requester&#39;</span><span class="p">])</span>
+        <span class="n">recv_socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">endpoint</span><span class="p">[</span><span class="s1">&#39;receiver&#39;</span><span class="p">])</span>
+        <span class="c1"># sleep 0.5s to make sure socket connection finish</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">send_socket</span><span class="p">,</span> <span class="n">recv_socket</span><span class="p">,</span> <span class="n">zmq_context</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">tinyrpcx</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpc_server.html">RPC Server Wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../protocols.html">Jsonrpc Protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../transports.html">Zmq Transport</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../client.html">RPC Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server.html">RPC Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dispatch.html">RPC Dispatcher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, HWTE-SW ASIA APPLE.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

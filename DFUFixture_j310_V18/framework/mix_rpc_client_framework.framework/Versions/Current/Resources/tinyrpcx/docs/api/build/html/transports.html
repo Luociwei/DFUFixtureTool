@@ -1,0 +1,263 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Zmq Transport &#8212; tinyrpcx 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="RPC Client" href="client.html" />
+    <link rel="prev" title="Jsonrpc Protocol" href="protocols.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-tinyrpc.transports.zmq">
+<span id="zmq-transport"></span><h1>Zmq Transport<a class="headerlink" href="#module-tinyrpc.transports.zmq" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="tinyrpc.transports.zmq.ZmqClientTransport">
+<em class="property">class </em><code class="descclassname">tinyrpc.transports.zmq.</code><code class="descname">ZmqClientTransport</code><span class="sig-paren">(</span><em>send_socket</em>, <em>recv_socket</em>, <em>context</em>, <em>endpoint</em>, <em>channel=None</em>, <em>timeout_ms=3000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/transports/zmq.html#ZmqClientTransport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.transports.zmq.ZmqClientTransport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Client transport based on a <code class="xref py py-const docutils literal notranslate"><span class="pre">zmq.REQ</span></code> socket.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>send_socket</strong> – A <code class="xref py py-const docutils literal notranslate"><span class="pre">zmq.REQ</span></code> socket instance, connected to the
+server socket for sending request.</li>
+<li><strong>recv_socket</strong> – A <code class="xref py py-const docutils literal notranslate"><span class="pre">zmq.ROUTER</span></code> socket instance, bound to an
+endpoint for receiving response;</li>
+<li><strong>zmq_context</strong> – A 0mq context.</li>
+<li><strong>endpoint</strong> – The endpoint the server is bound to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Reason to have 2 separate sockets is ZMQ sockets are non-thread-safe;</dt>
+<dd>If we are to separate sending and receving in 2 threads, each thread
+must have its own socket or zmq could crash.</dd>
+</dl>
+<dl class="classmethod">
+<dt id="tinyrpc.transports.zmq.ZmqClientTransport.create">
+<em class="property">classmethod </em><code class="descname">create</code><span class="sig-paren">(</span><em>zmq_context</em>, <em>endpoint</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/transports/zmq.html#ZmqClientTransport.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.transports.zmq.ZmqClientTransport.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new client transport.</p>
+<p>Instead of creating the socket yourself, you can call this function and
+merely pass the <code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.core.context.Context</span></code> instance.</p>
+<p>By passing a context imported from <code class="xref py py-mod docutils literal notranslate"><span class="pre">zmq.green</span></code>, you can use
+green (gevent) 0mq sockets as well.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zmq_context</strong> – A 0mq context.</li>
+<li><strong>endpoint</strong> – The endpoints the server is bound to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.transports.zmq.ZmqClientTransport.send_message">
+<code class="descname">send_message</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/transports/zmq.html#ZmqClientTransport.send_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.transports.zmq.ZmqClientTransport.send_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a message to the server and possibly receive a reply.</p>
+<p>Sends a message to the connected server.</p>
+<p>Messages must be strings, it is up to the sender to convert the
+beforehand. A non-string value raises a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code>.</p>
+<p>This function will block until one reply has been received.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> – A string to send.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A string containing the server reply.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tinyrpc.transports.zmq.ZmqServerTransport">
+<em class="property">class </em><code class="descclassname">tinyrpc.transports.zmq.</code><code class="descname">ZmqServerTransport</code><span class="sig-paren">(</span><em>recv_socket</em>, <em>reply_socket</em>, <em>poll_time_ms=5000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/transports/zmq.html#ZmqServerTransport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.transports.zmq.ZmqServerTransport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Server transport based on a <code class="xref py py-const docutils literal notranslate"><span class="pre">zmq.ROUTER</span></code> socket.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>recv_ocket</strong> – A <code class="xref py py-const docutils literal notranslate"><span class="pre">zmq.ROUTER</span></code> socket instance, bound to an
+endpoint for receiving request.</li>
+<li><strong>reply_socket</strong> – <p>A <code class="xref py py-const docutils literal notranslate"><span class="pre">zmq.ROUTER</span></code> socket instance, bound to an</p>
+<p>endpoint for sending reply;</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Reason to have 2 separate sockets is ZMQ sockets are non-thread-safe;</dt>
+<dd>If we are to separate sending and receving in 2 threads, each thread
+must have its own socket or zmq could crash.</dd>
+</dl>
+<dl class="classmethod">
+<dt id="tinyrpc.transports.zmq.ZmqServerTransport.create">
+<em class="property">classmethod </em><code class="descname">create</code><span class="sig-paren">(</span><em>zmq_context</em>, <em>endpoint</em>, <em>poll_time_ms=5000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/transports/zmq.html#ZmqServerTransport.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.transports.zmq.ZmqServerTransport.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new server transport.</p>
+<p>Instead of creating the socket yourself, you can call this function and
+merely pass the <code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.core.context.Context</span></code> instance.</p>
+<p>By passing a context imported from <code class="xref py py-mod docutils literal notranslate"><span class="pre">zmq.green</span></code>, you can use
+green (gevent) 0mq sockets as well.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zmq_context</strong> – A 0mq context.</li>
+<li><strong>endpoint</strong> – The endpoint clients will connect to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.transports.zmq.ZmqServerTransport.receive_message">
+<code class="descname">receive_message</code><span class="sig-paren">(</span><em>poll_time_ms=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/transports/zmq.html#ZmqServerTransport.receive_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.transports.zmq.ZmqServerTransport.receive_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asynchronous poll socket</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.transports.zmq.ZmqServerTransport.send_reply">
+<code class="descname">send_reply</code><span class="sig-paren">(</span><em>context</em>, <em>reply</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/transports/zmq.html#ZmqServerTransport.send_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.transports.zmq.ZmqServerTransport.send_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a reply to a client.</p>
+<p>The client is usually identified by passing <code class="docutils literal notranslate"><span class="pre">context</span></code> as returned
+from the original
+<code class="xref py py-func docutils literal notranslate"><span class="pre">receive_message()</span></code> call.</p>
+<p>Messages must be strings, it is up to the sender to convert the
+beforehand. A non-string value raises a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>context</strong> – A context returned by
+<code class="xref py py-func docutils literal notranslate"><span class="pre">receive_message()</span></code>.</li>
+<li><strong>reply</strong> – A string to send back as the reply.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">tinyrpcx</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rpc_server.html">RPC Server Wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Jsonrpc Protocol</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Zmq Transport</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">RPC Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">RPC Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dispatch.html">RPC Dispatcher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="protocols.html" title="previous chapter">Jsonrpc Protocol</a></li>
+      <li>Next: <a href="client.html" title="next chapter">RPC Client</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, HWTE-SW ASIA APPLE.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/transports.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

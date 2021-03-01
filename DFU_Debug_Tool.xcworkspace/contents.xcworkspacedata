@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:DFUFixture_j310_V18/DFUFixture.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:CwGeneralManagerFrameWork/CwGeneralManagerFrameWork.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:DfuDebugTool/DfuDebugTool.xcodeproj">
+   </FileRef>
+</Workspace>

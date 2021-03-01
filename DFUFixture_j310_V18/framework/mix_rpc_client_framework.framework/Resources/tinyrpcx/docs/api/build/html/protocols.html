@@ -1,0 +1,268 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Jsonrpc Protocol &#8212; tinyrpcx 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Zmq Transport" href="transports.html" />
+    <link rel="prev" title="RPC Server Wrapper" href="rpc_server.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="jsonrpc-protocol">
+<h1>Jsonrpc Protocol<a class="headerlink" href="#jsonrpc-protocol" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCProtocol">
+<em class="property">class </em><code class="descclassname">tinyrpc.protocols.jsonrpc.</code><code class="descname">JSONRPCProtocol</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCProtocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>JSONRPC protocol implementation.</p>
+<p>Currently, only version 2.0 is supported.</p>
+<dl class="method">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCProtocol.create_batch_request">
+<code class="descname">create_batch_request</code><span class="sig-paren">(</span><em>requests=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCProtocol.create_batch_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCProtocol.create_batch_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new <code class="xref py py-class docutils literal notranslate"><span class="pre">tinyrpc.RPCBatchRequest</span></code> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>requests</strong> – A list of requests.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCProtocol.create_request">
+<code class="descname">create_request</code><span class="sig-paren">(</span><em>method</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCProtocol.create_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCProtocol.create_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>method: string of methon name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCProtocol.parse_reply">
+<code class="descname">parse_reply</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCProtocol.parse_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCProtocol.parse_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a reply and returns an <code class="xref py py-class docutils literal notranslate"><span class="pre">RPCResponse</span></code> instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">An instanced response.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCProtocol.parse_request">
+<code class="descname">parse_request</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCProtocol.parse_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCProtocol.parse_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a request given as a string and returns an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RPCRequest</span></code> instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">An instanced request.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCRequest">
+<em class="property">class </em><code class="descclassname">tinyrpc.protocols.jsonrpc.</code><code class="descname">JSONRPCRequest</code><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCRequest" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCRequest.error_respond">
+<code class="descname">error_respond</code><span class="sig-paren">(</span><em>error</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCRequest.error_respond"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCRequest.error_respond" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an error response.</p>
+<p>Create a response indicating that the request was parsed correctly,
+but an error has occured trying to fulfill it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>error</strong> – An exception or a string describing the error.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A response or <code class="docutils literal notranslate"><span class="pre">None</span></code> to indicate that no error should be sent
+out.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCRequest.respond">
+<code class="descname">respond</code><span class="sig-paren">(</span><em>result</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCRequest.respond"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCRequest.respond" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a response.</p>
+<p>Call this to return the result of a successful method invocation.</p>
+<p>This creates and returns an instance of a protocol-specific subclass of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RPCResponse</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>result</strong> – Passed on to new response instance.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A response or <code class="docutils literal notranslate"><span class="pre">None</span></code> to indicate this request does not expect
+a response.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCRequest.serialize">
+<code class="descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCRequest.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCRequest.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a serialization of the request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A string to be passed on to a transport.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCSuccessResponse">
+<em class="property">class </em><code class="descclassname">tinyrpc.protocols.jsonrpc.</code><code class="descname">JSONRPCSuccessResponse</code><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCSuccessResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCSuccessResponse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCSuccessResponse.serialize">
+<code class="descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCSuccessResponse.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCSuccessResponse.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a serialization of the response.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A reply to be passed on to a transport.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCErrorResponse">
+<em class="property">class </em><code class="descclassname">tinyrpc.protocols.jsonrpc.</code><code class="descname">JSONRPCErrorResponse</code><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCErrorResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCErrorResponse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="tinyrpc.protocols.jsonrpc.JSONRPCErrorResponse.serialize">
+<code class="descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinyrpc/protocols/jsonrpc.html#JSONRPCErrorResponse.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tinyrpc.protocols.jsonrpc.JSONRPCErrorResponse.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a serialization of the response.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A reply to be passed on to a transport.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">tinyrpcx</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rpc_server.html">RPC Server Wrapper</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Jsonrpc Protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transports.html">Zmq Transport</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">RPC Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">RPC Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dispatch.html">RPC Dispatcher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="rpc_server.html" title="previous chapter">RPC Server Wrapper</a></li>
+      <li>Next: <a href="transports.html" title="next chapter">Zmq Transport</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, HWTE-SW ASIA APPLE.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/protocols.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
