@@ -24,6 +24,7 @@ void* event_ctx_p = NULL;
 fixture_event_callback_t on_fixture_event_fp = NULL;
 stop_event_notfication_callback_t on_stop_event_notification_fp = NULL;
 NSString *Xavier_Version = @"";
+
 void writeFixtureLog(NSString *strContent)
 {
 //    dispatch_queue_t quene = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
@@ -37,9 +38,15 @@ void writeFixtureLog(NSString *strContent)
         //NSString* timeFilenName = [DateFomatter stringFromDate:[NSDate date]];
        // [DateFomatter release];
         //NSString *pathLogFile=[NSString stringWithFormat:@"/vault/Atlas/FixtureLog/SunCode/SCFixture_Command_%@.txt",timeFilenName];
+        
         NSString *pathLogFile = @"/vault/Atlas/FixtureLog/SunCode/SCFixture_Command.txt";
+        NSString *pathTempLogFile = @"/vault/Atlas/FixtureLog/SunCode/SCFixture_Temp_Command.txt";
         [plistParse checkLogFileExist:pathLogFile];
+        
         [plistParse writeLog2File:pathLogFile withTime:timeFlag andContent:strContent];
+        
+        [plistParse checkLogFileExist:pathTempLogFile];
+        [plistParse writeLog1File:pathTempLogFile withTime:timeFlag andContent:strContent];
     }
 }
 void test(int index){
@@ -158,11 +165,21 @@ int executeAction(void *controller,NSString * key, int site)
 
     RPCController *fixture = (__bridge RPCController *)controller;
     id list = [cmd objectForKey:key];
+    NSArray * arr = nil;
     if ([list isEqual:@[@""]] || [list isEqual:@""] || list == NULL)
     {
+        arr = [key componentsSeparatedByString:@"&&"];
+//        return 0;
+    }else{
+        arr = [cmd objectForKey:key];
+    }
+    
+    if (!arr.count) {
+        arr = [key componentsSeparatedByString:@"&&"];
+    }else{
         return 0;
     }
-    NSArray * arr = [cmd objectForKey:key];
+  
     for (int j=0; j<[arr count]; j++)
     {
         if ([[[arr objectAtIndex:j]uppercaseString] containsString:@"DELAY:"])
@@ -191,6 +208,54 @@ int executeAction(void *controller,NSString * key, int site)
     return 0;
 }
 
+
+const char * const executeAction_original(void *controller,NSString * cmd, int site)
+{
+    if(site<1)
+        return "";
+    
+    RPCController *fixture = (__bridge RPCController *)controller;
+    //    id list = [cmd objectForKey:key];
+    //    if ([list isEqual:@[@""]] || [list isEqual:@""] || list == NULL)
+    //    {
+    //
+    //        return 0;
+    //    }
+//    NSArray * arr = [cmd objectForKey:key];
+//    if (!arr.count) {
+//        arr = [key componentsSeparatedByString:@"&&"];
+//    }
+     NSArray * arr = [cmd componentsSeparatedByString:@"&&"];
+    NSMutableString *mutRet = [[NSMutableString alloc]initWithString:@""];
+    for (int j=0; j<[arr count]; j++)
+    {
+        if ([[[arr objectAtIndex:j]uppercaseString] containsString:@"DELAY:"])
+        {
+            NSArray *arryDelay=[[arr objectAtIndex:j] componentsSeparatedByString:@":"];
+            if ([[arryDelay[0] uppercaseString] isEqual:@"DELAY"])
+            {
+                [NSThread sleepForTimeInterval:[arryDelay[1] doubleValue]];
+            }
+        }
+        else
+        {
+            NSString *ret = [fixture WriteReadString:[arr objectAtIndex:j] atSite:site-1 timeOut:6000];
+            [mutRet appendString:ret];
+            
+//            if (j==[arr count]-1)
+//            {
+//                writeFixtureLog([NSString stringWithFormat:@"[cmd] %@, [result] %@\r\n",[arr objectAtIndex:j],ret]);
+//            }
+//            else
+//            {
+//                writeFixtureLog([NSString stringWithFormat:@"[cmd] %@, [result] %@",[arr objectAtIndex:j],ret]);
+//            }
+            
+        }
+        
+    }
+    return mutRet.UTF8String;
+}
 
 int executeAllAction(void *controller,NSString * key)
 {
@@ -423,7 +488,7 @@ int fixture_close(void* controller, int actuator_index)
     writeFixtureLog([NSString stringWithFormat:@"fixture_close, actuator_index: %d",actuator_index]);
     RPCController *fixture = (__bridge RPCController *)controller;
     create_global_object(fixture);
-    return executeAction(controller,kFIXTURECLOSE, 1);
+    return executeAction(controller,kFIXTURECLOSE, 1);//Fixture_Close
 }
 
 

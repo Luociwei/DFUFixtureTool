@@ -32,6 +32,7 @@
 
 +(instancetype)cw_allocInitWithFrame:(NSRect)frame{
     TextView *view = [[self alloc]initWithFrame:frame];
+    
     return view;
 }
 
@@ -41,6 +42,7 @@
     
     self.scrollView.frame = self.bounds;
     self.logTextView.frame = self.scrollView.bounds;
+    
 }
 
 
@@ -93,6 +95,9 @@
         btn.bordered = NO;
 //        btn.frame = NSMakeRect(0, 0, 20, 20);
         [self addSubview:btn];
+        
+        
+//        self.logTextView.string = @"1111111";
     }
     
     return  self;

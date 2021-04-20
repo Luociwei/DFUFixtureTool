@@ -190,6 +190,11 @@
                             kUSBSIGNALON:@[@""],
                             
                             };
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSString *plistFile =@"/vault/Atlas/FixtureLog/SunCode/DFUFixtureCmd.plist";
+        if (![fileManager fileExistsAtPath:plistFile]){
+            [dic writeToFile:plistFile atomically:YES];
+        }
         
         NSLog(@"-->file not exist at path:%@",file);
         return dic;
@@ -232,5 +237,12 @@
     [fh closeFile];
 }
 
++(void)writeLog1File:(NSString *)filePath withTime:(NSString *) testTime andContent:(NSString *)str
+{
+    NSFileHandle* fh=[NSFileHandle fileHandleForWritingAtPath:filePath];
+    //    [fh seekToEndOfFile];
+    [fh writeData:[[NSString stringWithFormat:@"%@  %@\r\n",testTime,str] dataUsingEncoding:NSUTF8StringEncoding]];
+    [fh closeFile];
+}
 
 @end

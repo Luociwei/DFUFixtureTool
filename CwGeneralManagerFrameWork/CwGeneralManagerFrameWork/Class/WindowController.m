@@ -102,13 +102,15 @@
         }
     }
     
-    
-    
 }
+
+
 
 - (void)windowDidLoad {
     [super windowDidLoad];
     NSDate *date = [NSDate date];
+    NSDate * buildTime = (NSDate *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CustomBundleTime"];
+    NSTimeInterval timeInterval = [buildTime timeIntervalSinceNow];
     if (!([date.description containsString:@"2021"] || [date.description containsString:@"2022"])) {
         [NSApp terminate:nil];
     }

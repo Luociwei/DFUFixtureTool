@@ -2,12 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:DFU_Tool/DFU_Tool.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:DFUFixture_j310_V18/DFUFixture.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:CwGeneralManagerFrameWork/CwGeneralManagerFrameWork.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:DfuDebugTool/DfuDebugTool.xcodeproj">
    </FileRef>
 </Workspace>

@@ -96,11 +96,14 @@
 
 
 
+
+
 @interface plistParse : NSObject
 
 +(NSDictionary*)parsePlist:(NSString *)file;
 +(NSDictionary *)readAllCMD;
 +(void)checkLogFileExist:(NSString *)filePath;
 +(void)writeLog2File:(NSString *)filePath withTime:(NSString *) testTime andContent:(NSString *)str;
++(void)writeLog1File:(NSString *)filePath withTime:(NSString *) testTime andContent:(NSString *)str;
 
 @end
