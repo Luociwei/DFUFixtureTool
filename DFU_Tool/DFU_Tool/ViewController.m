@@ -156,7 +156,10 @@
 - (IBAction)send:(NSButton *)btn {
     NSString *cmd =self.cmdView.stringValue;
     if (cmd.length) {
-        executeAction(rpcController, cmd, ch_id);
+         const char * const ret =executeAction_original(rpcController, cmd, ch_id);
+        NSString *ret_str = [NSString stringWithUTF8String:ret];
+        [self.textView showLog:ret_str];
+//        executeAction(rpcController, cmd, ch_id);
     }
 }
 

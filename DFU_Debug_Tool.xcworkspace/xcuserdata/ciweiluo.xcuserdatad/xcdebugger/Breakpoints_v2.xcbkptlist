@@ -265,13 +265,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "DFU_Tool/DFU_Tool/ViewController.m"
-            timestampString = "640619532.665308"
+            filePath = "DFU_Tool/DFU_Tool/CatchFwVc.m"
+            timestampString = "640658982.1746939"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "157"
-            endingLineNumber = "157"
-            landmarkName = "-send:"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "-viewWillAppear"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -281,13 +281,29 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "DFU_Tool/DFU_Tool/WindowVC.m"
-            timestampString = "640623636.288105"
+            filePath = "CwGeneralManagerFrameWork/CwGeneralManagerFrameWork/Class/PresentViewController.m"
+            timestampString = "640658982.174754"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "57"
-            endingLineNumber = "57"
-            landmarkName = "-windowDidLoad"
+            startingLineNumber = "59"
+            endingLineNumber = "59"
+            landmarkName = "-windowWillClose:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CwGeneralManagerFrameWork/CwGeneralManagerFrameWork/Class/WindowController.m"
+            timestampString = "640658982.1748"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "130"
+            endingLineNumber = "130"
+            landmarkName = "-windowWillClose:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

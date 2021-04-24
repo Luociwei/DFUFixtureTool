@@ -123,8 +123,11 @@
 }
 - (void)windowWillClose:(NSNotification *)notification {
     id obj = notification.object;
-//    NSString *title =[obj title];
-    if (obj == [NSApp mainWindow]) {
+    NSString *title =[obj title];
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    // app名称
+    NSString *app_Name = [infoDictionary objectForKey:@"CFBundleName"];
+    if (obj == [NSApp mainWindow] && [title isEqualToString:app_Name]) {
         [NSApp terminate:nil];
     }
 //    if ([title length]) {

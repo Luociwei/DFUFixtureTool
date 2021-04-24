@@ -15,22 +15,33 @@
 #import <CwGeneralManagerFrameWork/FileManager.h>
 #import "DFUFixture.h"
 #import "AtlasLogVC.h"
+#import "CatchFwVc.h"
 
 @interface WindowVC ()
 
 @property (weak) IBOutlet NSImageView *isMixReadyImage;
 @property (strong,nonatomic)EditCmdsVC *editVC;
+@property (strong,nonatomic)CatchFwVc *catchFwVc;
 @property (strong,nonatomic)ViewController *vc_ch1;
 @property (strong,nonatomic)ViewController *vc_ch2;
 @property (strong,nonatomic)ViewController *vc_ch3;
 @property (strong,nonatomic)ViewController *vc_ch4;
 @property (strong,nonatomic)FixtureVC *vc_fixture;
 @property (strong,nonatomic)AtlasLogVC *atlasCsvLogVC;
+
 @end
 
 @implementation WindowVC{
     void *rpcController;
 }
+
+
+
+- (IBAction)CatchFW:(NSButton *)sender {
+    
+    [self.catchFwVc showViewOnViewController:self.contentViewController];
+}
+
 
 - (void)windowDidLoad {
     [super windowDidLoad];
@@ -180,5 +191,10 @@
     }
     return _editVC;
 }
-
+-(PresentViewController *)catchFwVc{
+    if (!_catchFwVc) {
+        _catchFwVc =[[CatchFwVc alloc]init];
+    }
+    return _catchFwVc;
+}
 @end

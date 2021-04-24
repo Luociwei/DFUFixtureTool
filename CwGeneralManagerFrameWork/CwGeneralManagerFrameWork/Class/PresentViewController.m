@@ -18,16 +18,19 @@
     [super viewDidLoad];
     // Do view setup here.
     self.title = NSStringFromClass([self class]);
-
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(windowWillClose:)
+                                                 name:NSWindowWillCloseNotification
+                                               object:nil];
 }
 
 
 -(void)viewDidAppear{
     [super viewDidAppear];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(windowWillClose:)
-                                                 name:NSWindowWillCloseNotification
-                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(windowWillClose:)
+//                                                 name:NSWindowWillCloseNotification
+//                                               object:nil];
 }
 
 -(void)viewDidDisappear{

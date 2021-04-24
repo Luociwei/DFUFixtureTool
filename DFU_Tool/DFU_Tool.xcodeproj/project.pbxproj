@@ -11,17 +11,17 @@
 		711A34331DC3539000F5B5D2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 711A34321DC3539000F5B5D2 /* main.m */; };
 		711A34381DC3539000F5B5D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 711A34371DC3539000F5B5D2 /* Assets.xcassets */; };
 		711A343B1DC3539000F5B5D2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 711A34391DC3539000F5B5D2 /* Main.storyboard */; };
-		BA0A4B0F25EF55BF00DE1FDF /* DutSocket.app in Resources */ = {isa = PBXBuildFile; fileRef = BA0A4B0E25EF55BF00DE1FDF /* DutSocket.app */; };
 		BA10437C25EB63320066BA1B /* WindowVC.m in Sources */ = {isa = PBXBuildFile; fileRef = BA10437A25EB63320066BA1B /* WindowVC.m */; };
 		BA10438325EBB6A60066BA1B /* FixtureVC.m in Sources */ = {isa = PBXBuildFile; fileRef = BA10438125EBB6A60066BA1B /* FixtureVC.m */; };
 		BA10438425EBB6A60066BA1B /* FixtureVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA10438225EBB6A60066BA1B /* FixtureVC.xib */; };
 		BA10438C25EBDE450066BA1B /* EditCmdsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = BA10438A25EBDE450066BA1B /* EditCmdsVC.m */; };
 		BA10438D25EBDE450066BA1B /* EditCmdsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA10438B25EBDE450066BA1B /* EditCmdsVC.xib */; };
+		BA1D976F2631CF2D0066545F /* CwGeneralManagerFrameWork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA1D976E2631CF2D0066545F /* CwGeneralManagerFrameWork.framework */; };
+		BA1D97702631CF2D0066545F /* CwGeneralManagerFrameWork.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA1D976E2631CF2D0066545F /* CwGeneralManagerFrameWork.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BA7F9970262F2BB80016F975 /* CatchFwVc.m in Sources */ = {isa = PBXBuildFile; fileRef = BA7F996E262F2BB80016F975 /* CatchFwVc.m */; };
+		BA7F9971262F2BB80016F975 /* CatchFwVc.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA7F996F262F2BB80016F975 /* CatchFwVc.xib */; };
+		BA7F9973262F31E30016F975 /* DFU_Station_CatchFW.py in Resources */ = {isa = PBXBuildFile; fileRef = BA7F9972262F31E30016F975 /* DFU_Station_CatchFW.py */; };
 		BA8E4C8C25EBE7810056F67F /* SnVauleMode.m in Sources */ = {isa = PBXBuildFile; fileRef = BA8E4C8B25EBE7810056F67F /* SnVauleMode.m */; };
-		BA8E4D4825ED44340056F67F /* CwGeneralManagerFrameWork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA8E4D4725ED44340056F67F /* CwGeneralManagerFrameWork.framework */; };
-		BA8E4D4925ED44340056F67F /* CwGeneralManagerFrameWork.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA8E4D4725ED44340056F67F /* CwGeneralManagerFrameWork.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BA8E4D5B25EDCA8D0056F67F /* libDFUFixture.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA8E4D5A25EDCA8D0056F67F /* libDFUFixture.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		BA8E4D5C25EDCA900056F67F /* libDFUFixture.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA8E4D5A25EDCA8D0056F67F /* libDFUFixture.dylib */; };
 		BAB4315225B32A38003F0AFB /* ExtensionConst.m in Sources */ = {isa = PBXBuildFile; fileRef = BAB4315025B32A38003F0AFB /* ExtensionConst.m */; };
 		BAB4317225B332E2003F0AFB /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BAB4316F25B332E2003F0AFB /* ViewController.xib */; };
 		BAB4317325B332E2003F0AFB /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAB4317125B332E2003F0AFB /* ViewController.m */; };
@@ -30,6 +30,8 @@
 		BAE84F3A262DBEFE00C42696 /* ItemMode.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE84F38262DBEFD00C42696 /* ItemMode.m */; };
 		BAE84F3D262DC0F800C42696 /* AtlasMode.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE84F3C262DC0F800C42696 /* AtlasMode.m */; };
 		BAE84F40262DE86500C42696 /* FileDragView.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE84F3F262DE86500C42696 /* FileDragView.m */; };
+		BAE84F42262F255B00C42696 /* libDFUFixture.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAE84F41262F255B00C42696 /* libDFUFixture.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BAE84F43262F257500C42696 /* libDFUFixture.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BAE84F41262F255B00C42696 /* libDFUFixture.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,8 +41,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				BA8E4D5B25EDCA8D0056F67F /* libDFUFixture.dylib in Embed Frameworks */,
-				BA8E4D4925ED44340056F67F /* CwGeneralManagerFrameWork.framework in Embed Frameworks */,
+				BA1D97702631CF2D0066545F /* CwGeneralManagerFrameWork.framework in Embed Frameworks */,
+				BAE84F42262F255B00C42696 /* libDFUFixture.dylib in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -55,7 +57,6 @@
 		711A34371DC3539000F5B5D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		711A343A1DC3539000F5B5D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		711A343C1DC3539000F5B5D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		BA0A4B0E25EF55BF00DE1FDF /* DutSocket.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = DutSocket.app; sourceTree = "<group>"; };
 		BA10437925EB63320066BA1B /* WindowVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowVC.h; sourceTree = "<group>"; };
 		BA10437A25EB63320066BA1B /* WindowVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WindowVC.m; sourceTree = "<group>"; };
 		BA10438025EBB6A60066BA1B /* FixtureVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FixtureVC.h; sourceTree = "<group>"; };
@@ -64,12 +65,16 @@
 		BA10438925EBDE450066BA1B /* EditCmdsVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditCmdsVC.h; sourceTree = "<group>"; };
 		BA10438A25EBDE450066BA1B /* EditCmdsVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditCmdsVC.m; sourceTree = "<group>"; };
 		BA10438B25EBDE450066BA1B /* EditCmdsVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EditCmdsVC.xib; sourceTree = "<group>"; };
+		BA1D976E2631CF2D0066545F /* CwGeneralManagerFrameWork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CwGeneralManagerFrameWork.framework; sourceTree = "<group>"; };
+		BA7F996D262F2BB80016F975 /* CatchFwVc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CatchFwVc.h; sourceTree = "<group>"; };
+		BA7F996E262F2BB80016F975 /* CatchFwVc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CatchFwVc.m; sourceTree = "<group>"; };
+		BA7F996F262F2BB80016F975 /* CatchFwVc.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CatchFwVc.xib; sourceTree = "<group>"; };
+		BA7F9972262F31E30016F975 /* DFU_Station_CatchFW.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = DFU_Station_CatchFW.py; sourceTree = "<group>"; };
+		BA7F9974262F35320016F975 /* CwGeneralManagerFrameWork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CwGeneralManagerFrameWork.framework; path = ../../../../../Library/Developer/Xcode/DerivedData/Build/Products/Debug/CwGeneralManagerFrameWork.framework; sourceTree = "<group>"; };
 		BA8E4C8A25EBE7810056F67F /* SnVauleMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SnVauleMode.h; sourceTree = "<group>"; };
 		BA8E4C8B25EBE7810056F67F /* SnVauleMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SnVauleMode.m; sourceTree = "<group>"; };
 		BA8E4CF725EC04E00056F67F /* DFUFixture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DFUFixture.h; sourceTree = "<group>"; };
-		BA8E4D4725ED44340056F67F /* CwGeneralManagerFrameWork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CwGeneralManagerFrameWork.framework; sourceTree = "<group>"; };
 		BA8E4D5825EDCA3A0056F67F /* libDFUFixture.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libDFUFixture.dylib; path = ../../../../../Library/Developer/Xcode/DerivedData/Build/Products/Debug/libDFUFixture.dylib; sourceTree = "<group>"; };
-		BA8E4D5A25EDCA8D0056F67F /* libDFUFixture.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libDFUFixture.dylib; sourceTree = "<group>"; };
 		BAB4315025B32A38003F0AFB /* ExtensionConst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExtensionConst.m; sourceTree = "<group>"; };
 		BAB4315125B32A38003F0AFB /* ExtensionConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtensionConst.h; sourceTree = "<group>"; };
 		BAB4316F25B332E2003F0AFB /* ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
@@ -84,6 +89,7 @@
 		BAE84F3C262DC0F800C42696 /* AtlasMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AtlasMode.m; sourceTree = "<group>"; };
 		BAE84F3E262DE86400C42696 /* FileDragView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileDragView.h; sourceTree = "<group>"; };
 		BAE84F3F262DE86500C42696 /* FileDragView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileDragView.m; sourceTree = "<group>"; };
+		BAE84F41262F255B00C42696 /* libDFUFixture.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libDFUFixture.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,8 +97,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA8E4D4825ED44340056F67F /* CwGeneralManagerFrameWork.framework in Frameworks */,
-				BA8E4D5C25EDCA900056F67F /* libDFUFixture.dylib in Frameworks */,
+				BA1D976F2631CF2D0066545F /* CwGeneralManagerFrameWork.framework in Frameworks */,
+				BAE84F43262F257500C42696 /* libDFUFixture.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,8 +108,8 @@
 		711A34221DC3539000F5B5D2 = {
 			isa = PBXGroup;
 			children = (
-				BA8E4D5A25EDCA8D0056F67F /* libDFUFixture.dylib */,
-				BA8E4D4725ED44340056F67F /* CwGeneralManagerFrameWork.framework */,
+				BA1D976E2631CF2D0066545F /* CwGeneralManagerFrameWork.framework */,
+				BAE84F41262F255B00C42696 /* libDFUFixture.dylib */,
 				711A342D1DC3539000F5B5D2 /* DFU_Tool */,
 				711A342C1DC3539000F5B5D2 /* Products */,
 				BAB4314625B328C1003F0AFB /* Frameworks */,
@@ -121,7 +127,6 @@
 		711A342D1DC3539000F5B5D2 /* DFU_Tool */ = {
 			isa = PBXGroup;
 			children = (
-				BA0A4B0E25EF55BF00DE1FDF /* DutSocket.app */,
 				BA8E4CF725EC04E00056F67F /* DFUFixture.h */,
 				711A342E1DC3539000F5B5D2 /* AppDelegate.h */,
 				711A342F1DC3539000F5B5D2 /* AppDelegate.m */,
@@ -149,6 +154,10 @@
 				BAB4316F25B332E2003F0AFB /* ViewController.xib */,
 				BAB4315125B32A38003F0AFB /* ExtensionConst.h */,
 				BAB4315025B32A38003F0AFB /* ExtensionConst.m */,
+				BA7F996D262F2BB80016F975 /* CatchFwVc.h */,
+				BA7F996E262F2BB80016F975 /* CatchFwVc.m */,
+				BA7F996F262F2BB80016F975 /* CatchFwVc.xib */,
+				BA7F9972262F31E30016F975 /* DFU_Station_CatchFW.py */,
 				711A34371DC3539000F5B5D2 /* Assets.xcassets */,
 				711A34391DC3539000F5B5D2 /* Main.storyboard */,
 				711A343C1DC3539000F5B5D2 /* Info.plist */,
@@ -168,6 +177,7 @@
 		BAB4314625B328C1003F0AFB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BA7F9974262F35320016F975 /* CwGeneralManagerFrameWork.framework */,
 				BA8E4D5825EDCA3A0056F67F /* libDFUFixture.dylib */,
 			);
 			name = Frameworks;
@@ -214,6 +224,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -232,13 +243,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA0A4B0F25EF55BF00DE1FDF /* DutSocket.app in Resources */,
+				BA7F9973262F31E30016F975 /* DFU_Station_CatchFW.py in Resources */,
 				711A34381DC3539000F5B5D2 /* Assets.xcassets in Resources */,
 				BAE84F34262DBEEB00C42696 /* AtlasLogVC.xib in Resources */,
 				711A343B1DC3539000F5B5D2 /* Main.storyboard in Resources */,
 				BA10438425EBB6A60066BA1B /* FixtureVC.xib in Resources */,
 				BA10438D25EBDE450066BA1B /* EditCmdsVC.xib in Resources */,
 				BAB4317225B332E2003F0AFB /* ViewController.xib in Resources */,
+				BA7F9971262F2BB80016F975 /* CatchFwVc.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,6 +262,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BAE84F33262DBEEB00C42696 /* AtlasLogVC.m in Sources */,
+				BA7F9970262F2BB80016F975 /* CatchFwVc.m in Sources */,
 				BA10438325EBB6A60066BA1B /* FixtureVC.m in Sources */,
 				BAE84F40262DE86500C42696 /* FileDragView.m in Sources */,
 				BAE84F3A262DBEFE00C42696 /* ItemMode.m in Sources */,
