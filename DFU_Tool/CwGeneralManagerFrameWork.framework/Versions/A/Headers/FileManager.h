@@ -26,15 +26,15 @@ NS_ASSUME_NONNULL_BEGIN
 +(void)cw_removeItemAtPath:(NSString *)filePath;
 
 +(id)cw_serializationWithJsonFilePath:(NSString *)filePath;
-
++ (id)cw_serializationWithJsonString:(NSString *)jsonString;
 + (id)cw_serializationInMainBundleFile:(NSString *)fileName;
 +(void)cw_openFileWithPath:(NSString *)path;
 
 +(NSArray *)cw_getFilenamelistOfType:(NSString *)type fromDirPath:(NSString *)dirPath;
 
 +(void)cw_copyBundleFileToDestPath:(NSString *)fullName destDir:(NSString *)destDir;
++(void)cw_copyFlolderFrom:(NSString *)filePath to:(NSString *)toPath;
 
-+(void)cw_copySourceFileToDestPath:(NSString *)sourcePath destDir:(NSString *)destDir;
 +(void)openPanel:(void(^)(NSString * path))callBack;
 +(void)savePanel:(void(^)(NSString * path))callBack;
 @end

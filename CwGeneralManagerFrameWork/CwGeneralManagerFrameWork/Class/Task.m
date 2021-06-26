@@ -48,13 +48,17 @@
 }
 
 
-+(NSString *)termialWithCmd:(NSString *)cmd{
-    return [self termialWithCmd:cmd delay:0.1];
++(NSString *)cw_termialWithCmd:(NSString *)cmd{
+    return [self cw_termialWithCmd:cmd delay:0.1];
     
 }
 
++(NSString *)cw_openFileWithPath:(NSString *)path{
+    return [self cw_termialWithCmd:[NSString stringWithFormat:@"open %@",path]];
+    
+}
 
-+(NSString *)termialWithCmd:(NSString *)cmd delay:(int)delay{
++(NSString *)cw_termialWithCmd:(NSString *)cmd delay:(int)delay{
     
     NSTask *task = [[NSTask alloc] init];
     [task setLaunchPath:@"/bin/sh"];//@"/usr/bin/python"
@@ -263,5 +267,17 @@
     return isOpen;
 }
 
+
++(BOOL)getIpState:(NSString *)ip{
+    
+    BOOL isOk = NO;
+    NSString *pingIP =[NSString stringWithFormat:@"ping %@ -t1",ip];
+    NSString *read  = [self cw_termialWithCmd:pingIP];
+    if ([read containsString:@"icmp_seq="]&&[read containsString:@"ttl="]) {
+        
+        isOk = YES;
+    }
+    return isOk;
+}
 
 @end

@@ -16,8 +16,8 @@
 		BA10438425EBB6A60066BA1B /* FixtureVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA10438225EBB6A60066BA1B /* FixtureVC.xib */; };
 		BA10438C25EBDE450066BA1B /* EditCmdsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = BA10438A25EBDE450066BA1B /* EditCmdsVC.m */; };
 		BA10438D25EBDE450066BA1B /* EditCmdsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA10438B25EBDE450066BA1B /* EditCmdsVC.xib */; };
-		BA1D976F2631CF2D0066545F /* CwGeneralManagerFrameWork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA1D976E2631CF2D0066545F /* CwGeneralManagerFrameWork.framework */; };
-		BA1D97702631CF2D0066545F /* CwGeneralManagerFrameWork.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA1D976E2631CF2D0066545F /* CwGeneralManagerFrameWork.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BA27332726875E0600C1F6F7 /* CwGeneralManagerFrameWork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA27332626875E0600C1F6F7 /* CwGeneralManagerFrameWork.framework */; };
+		BA27332826875E0600C1F6F7 /* CwGeneralManagerFrameWork.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA27332626875E0600C1F6F7 /* CwGeneralManagerFrameWork.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BA7F9970262F2BB80016F975 /* CatchFwVc.m in Sources */ = {isa = PBXBuildFile; fileRef = BA7F996E262F2BB80016F975 /* CatchFwVc.m */; };
 		BA7F9971262F2BB80016F975 /* CatchFwVc.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA7F996F262F2BB80016F975 /* CatchFwVc.xib */; };
 		BA7F9973262F31E30016F975 /* DFU_Station_CatchFW.py in Resources */ = {isa = PBXBuildFile; fileRef = BA7F9972262F31E30016F975 /* DFU_Station_CatchFW.py */; };
@@ -29,7 +29,6 @@
 		BAE84F34262DBEEB00C42696 /* AtlasLogVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = BAE84F31262DBEEB00C42696 /* AtlasLogVC.xib */; };
 		BAE84F3A262DBEFE00C42696 /* ItemMode.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE84F38262DBEFD00C42696 /* ItemMode.m */; };
 		BAE84F3D262DC0F800C42696 /* AtlasMode.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE84F3C262DC0F800C42696 /* AtlasMode.m */; };
-		BAE84F40262DE86500C42696 /* FileDragView.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE84F3F262DE86500C42696 /* FileDragView.m */; };
 		BAE84F42262F255B00C42696 /* libDFUFixture.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAE84F41262F255B00C42696 /* libDFUFixture.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BAE84F43262F257500C42696 /* libDFUFixture.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BAE84F41262F255B00C42696 /* libDFUFixture.dylib */; };
 /* End PBXBuildFile section */
@@ -41,7 +40,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				BA1D97702631CF2D0066545F /* CwGeneralManagerFrameWork.framework in Embed Frameworks */,
+				BA27332826875E0600C1F6F7 /* CwGeneralManagerFrameWork.framework in Embed Frameworks */,
 				BAE84F42262F255B00C42696 /* libDFUFixture.dylib in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -65,7 +64,7 @@
 		BA10438925EBDE450066BA1B /* EditCmdsVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditCmdsVC.h; sourceTree = "<group>"; };
 		BA10438A25EBDE450066BA1B /* EditCmdsVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditCmdsVC.m; sourceTree = "<group>"; };
 		BA10438B25EBDE450066BA1B /* EditCmdsVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EditCmdsVC.xib; sourceTree = "<group>"; };
-		BA1D976E2631CF2D0066545F /* CwGeneralManagerFrameWork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CwGeneralManagerFrameWork.framework; sourceTree = "<group>"; };
+		BA27332626875E0600C1F6F7 /* CwGeneralManagerFrameWork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CwGeneralManagerFrameWork.framework; sourceTree = "<group>"; };
 		BA7F996D262F2BB80016F975 /* CatchFwVc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CatchFwVc.h; sourceTree = "<group>"; };
 		BA7F996E262F2BB80016F975 /* CatchFwVc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CatchFwVc.m; sourceTree = "<group>"; };
 		BA7F996F262F2BB80016F975 /* CatchFwVc.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CatchFwVc.xib; sourceTree = "<group>"; };
@@ -87,8 +86,6 @@
 		BAE84F39262DBEFE00C42696 /* ItemMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemMode.h; sourceTree = "<group>"; };
 		BAE84F3B262DC0F800C42696 /* AtlasMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AtlasMode.h; sourceTree = "<group>"; };
 		BAE84F3C262DC0F800C42696 /* AtlasMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AtlasMode.m; sourceTree = "<group>"; };
-		BAE84F3E262DE86400C42696 /* FileDragView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileDragView.h; sourceTree = "<group>"; };
-		BAE84F3F262DE86500C42696 /* FileDragView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileDragView.m; sourceTree = "<group>"; };
 		BAE84F41262F255B00C42696 /* libDFUFixture.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libDFUFixture.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -97,7 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA1D976F2631CF2D0066545F /* CwGeneralManagerFrameWork.framework in Frameworks */,
+				BA27332726875E0600C1F6F7 /* CwGeneralManagerFrameWork.framework in Frameworks */,
 				BAE84F43262F257500C42696 /* libDFUFixture.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -108,7 +105,7 @@
 		711A34221DC3539000F5B5D2 = {
 			isa = PBXGroup;
 			children = (
-				BA1D976E2631CF2D0066545F /* CwGeneralManagerFrameWork.framework */,
+				BA27332626875E0600C1F6F7 /* CwGeneralManagerFrameWork.framework */,
 				BAE84F41262F255B00C42696 /* libDFUFixture.dylib */,
 				711A342D1DC3539000F5B5D2 /* DFU_Tool */,
 				711A342C1DC3539000F5B5D2 /* Products */,
@@ -142,8 +139,6 @@
 				BAE84F31262DBEEB00C42696 /* AtlasLogVC.xib */,
 				BAE84F3B262DC0F800C42696 /* AtlasMode.h */,
 				BAE84F3C262DC0F800C42696 /* AtlasMode.m */,
-				BAE84F3E262DE86400C42696 /* FileDragView.h */,
-				BAE84F3F262DE86500C42696 /* FileDragView.m */,
 				BA10437925EB63320066BA1B /* WindowVC.h */,
 				BA10437A25EB63320066BA1B /* WindowVC.m */,
 				BA10438025EBB6A60066BA1B /* FixtureVC.h */,
@@ -264,7 +259,6 @@
 				BAE84F33262DBEEB00C42696 /* AtlasLogVC.m in Sources */,
 				BA7F9970262F2BB80016F975 /* CatchFwVc.m in Sources */,
 				BA10438325EBB6A60066BA1B /* FixtureVC.m in Sources */,
-				BAE84F40262DE86500C42696 /* FileDragView.m in Sources */,
 				BAE84F3A262DBEFE00C42696 /* ItemMode.m in Sources */,
 				BAE84F3D262DC0F800C42696 /* AtlasMode.m in Sources */,
 				BA10438C25EBDE450066BA1B /* EditCmdsVC.m in Sources */,

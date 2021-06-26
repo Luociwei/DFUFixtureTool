@@ -7,7 +7,6 @@
 //
 
 #import "AtlasLogVC.h"
-#import "FileDragView.h"
 #import "ItemMode.h"
 
 #import <CwGeneralManagerFrameWork/Alert.h>
@@ -31,7 +30,7 @@ NSString *vrectCmd = @"hidreport -v 0x05ac -p 0x041F -i 3 set 0x82 0x82 0x29 0x2
 //@property (weak) IBOutlet NSTableView *snTableView;
 @property (weak) IBOutlet NSTextField *labelPath;
 //@property (nonatomic, strong) FMDatabase *db;
-@property (weak) IBOutlet FileDragView *logDropView;
+@property (weak) IBOutlet NSTextField *logDropView;
 
 //
 //    @property (nonatomic,strong)PythonTask *vrectReadTask;
@@ -51,24 +50,7 @@ NSString *vrectCmd = @"hidreport -v 0x05ac -p 0x041F -i 3 set 0x82 0x82 0x29 0x2
     [FileManager cw_createFile:dfuLogPath isDirectory:YES];
     
     self.items_datas = [[NSMutableArray alloc]init];
-//    self.sn_datas =[[NSMutableArray alloc]init];
-//    for (int i =0; i<5; i++) {
-//        ItemMode *mode = [[ItemMode alloc]init];
-//        mode.sn= [NSString stringWithFormat:@"item_%d",i];
-//        mode.startTime = [NSString stringWithFormat:@"%d",i+5];
-//        mode.failList = [NSString stringWithFormat:@"%d",i-5];
-//        [self.items_datas addObject:mode];
-//    }
 
-//    for (int i =0; i<5; i++) {
-//        SnVauleMode *mode = [[SnVauleMode alloc]init];
-//        mode.sn= [NSString stringWithFormat:@"sn_%d",i];
-//        mode.value = [NSString stringWithFormat:@"%d",i+5];
-//        [self.sn_datas addObject:mode];
-//    }
-//
-
-//    [self initTableView:self.snTableView];
     [self initTableView:self.itemsTableView];
   
     
@@ -80,57 +62,6 @@ NSString *vrectCmd = @"hidreport -v 0x05ac -p 0x041F -i 3 set 0x82 0x82 0x29 0x2
     tableView.rowHeight = 20;
     tableView.gridStyleMask = NSTableViewSolidHorizontalGridLineMask |NSTableViewSolidVerticalGridLineMask ;
 }
-
-/*
- 
- - (IBAction)add_csv_click:(NSButton *)sender {
- [FileManager openPanel:^(NSString * _Nonnull path) {
- NSLog(@"%@", [NSString stringWithFormat:@"CW+++++path:%@",path]);
- CSVParser *csv = [[CSVParser alloc]init];
- NSMutableArray *mutArray = nil;
- if ([csv openFile:path]) {
- mutArray = [csv parseFile];
- }
- 
- if (mutArray.count<8 ) {
- return;
- }
- 
- 
- NSArray *titles_arr = mutArray[1];
- NSArray *upper_arr = mutArray[4];
- NSArray *low_arr = mutArray[5];
- 
- NSMutableArray *item_mode_arr = [[NSMutableArray alloc]init];
- for (int i=0; i<titles_arr.count; i++) {
- if (i<12) {
- continue;
- }
- ItemMode *item_mode = [[ItemMode alloc]init];
- item_mode.item = titles_arr[i];
- item_mode.low = low_arr[i];
- item_mode.upper = upper_arr[i];
- item_mode.index=i;
- 
- for (int j =0; j<mutArray.count; j++) {
- if (j<7) {
- continue;
- }
- 
- SnVauleMode *sv = [[SnVauleMode alloc] init];
- sv.name = mutArray[j][2];
- sv.command = mutArray[j][i];
- [item_mode.SnVauleArray addObject:sv];
- }
- 
- [item_mode_arr addObject:item_mode];
- }
- NSLog(@"1");
- [self.items_datas removeAllObjects];
- [self.items_datas addObjectsFromArray:item_mode_arr];
- [self.itemsTableView reloadData];
- }
- */
 
 
 
@@ -180,7 +111,7 @@ NSString *vrectCmd = @"hidreport -v 0x05ac -p 0x041F -i 3 set 0x82 0x82 0x29 0x2
     }else{
         [Alert cw_RemindException:@"Save Success" Information:[NSString stringWithFormat:@"File Path:%@",path]];
         
-        [Task termialWithCmd:[NSString stringWithFormat:@"open %@",dfuLogPath]];
+        [Task cw_termialWithCmd:[NSString stringWithFormat:@"open %@",dfuLogPath]];
         
     }
 }

@@ -2,9 +2,8 @@
 //  FileDragView.m
 //  DragDropDemo
 //
-//  Created by zhaojw on 15/10/21.
-//  Copyright © 2015年 zhaojw. All rights reserved.
-//
+//  Created by Louis Luo on 2020/6/24.
+//  Copyright © 2020 Suncode. All rights reserved.
 
 #import "FileDragView.h"
 
@@ -24,6 +23,23 @@
     
 }
 
+-(instancetype)init{
+    self =[super init];
+    if (self) {
+//        [self registerForDraggedTypes:@[NSFilenamesPboardType]];
+    }
+    return self;
+}
+
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender {
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.stringValue = @"";
+            
+        });
+    });
+    return NSDragOperationNone;
+}
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
     
     NSLog(@"drag operation entered");
@@ -31,6 +47,13 @@
     NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
     
     NSPasteboard *pboard = [sender draggingPasteboard];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.stringValue = @"";
+            
+        });
+    });
+    
     
     if ( [[pboard types] containsObject:NSFilenamesPboardType] ) {
         

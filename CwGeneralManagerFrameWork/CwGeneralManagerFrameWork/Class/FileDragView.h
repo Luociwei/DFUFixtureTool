@@ -2,9 +2,8 @@
 //  FileDragView.h
 //  DragDropDemo
 //
-//  Created by zhaojw on 15/10/21.
-//  Copyright © 2015年 zhaojw. All rights reserved.
-//
+//  Created by Louis Luo on 2020/6/24.
+//  Copyright © 2020 Suncode. All rights reserved.
 
 #import <Cocoa/Cocoa.h>
 

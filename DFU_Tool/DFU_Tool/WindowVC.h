@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <CwGeneralManagerFrameWork/WindowController.h>
+#import "ExtensionConst.h"
 #import "EditCmdsVC.h"
 NS_ASSUME_NONNULL_BEGIN
 
