@@ -2,7 +2,7 @@
 //  DFUFixture.m
 //  DFUFixture
 //
-//  Created by RyanGao on 2020/10/02.
+//  Created by RyanGao on 2021/10/02.
 //  Copyright © 2020年 RyanGao. All rights reserved.
 //
 
@@ -102,9 +102,40 @@ void create_global_object(RPCController* controller)
     if (!g_queue)
     {
         g_queue = dispatch_queue_create("com.DFUFixture.global_queue", DISPATCH_QUEUE_SERIAL);
-        writeFixtureLog(@"create_global_object: g_queue");
+        //writeFixtureLog(@"create_global_object: g_queue");
     }
 }
+
+
+
+void* create_fixture_controllerWithPorts(int index,NSArray *ipPorts)
+{
+    if(cmd)
+    {
+        [cmd removeAllObjects];
+    }
+    else
+    {
+        cmd = [[NSMutableDictionary alloc]init];
+    }
+    [cmd setDictionary:[plistParse readAllCMD]];
+
+    if (!ipPorts.count)
+    {
+        return nil;
+    }
+//    NSMutableArray *ipPorts = [NSMutableArray array];
+//    for (int i=0; i<ports.count; i++)
+//    {
+//        NSString * ipPort = [[cmd objectForKey:kFIXTUREPORT] objectForKey:[NSString stringWithFormat:@"UUT%d",i]];
+//        [ipPorts addObject:ipPort];
+//    }
+    // writeFixtureLog([NSString stringWithFormat:@"create_fixture_controller , ip: %@, index : %d\r\n",ipPorts,index]);
+    RPCController *controller = [[RPCController alloc] initWithSlots:ipPorts.count withAddr:ipPorts];
+    create_global_object(controller);
+    return (__bridge_retained void *)controller;
+}
+
 
 void* create_fixture_controller(int index)
 {
@@ -131,7 +162,7 @@ void* create_fixture_controller(int index)
         NSString * ipPort = [[cmd objectForKey:kFIXTUREPORT] objectForKey:[NSString stringWithFormat:@"UUT%d",i]];
         [ipPorts addObject:ipPort];
     }
-    writeFixtureLog([NSString stringWithFormat:@"create_fixture_controller , ip: %@, index : %d\r\n",ipPorts,index]);
+   // writeFixtureLog([NSString stringWithFormat:@"create_fixture_controller , ip: %@, index : %d\r\n",ipPorts,index]);
     RPCController *controller = [[RPCController alloc] initWithSlots:g_SLOTS withAddr:ipPorts];
     create_global_object(controller);
     return (__bridge_retained void *)controller;
@@ -143,6 +174,9 @@ void release_fixture_controller(void* controller)
     {
         [cmd removeAllObjects];
     }
+    if (controller == nil) {
+        return;
+    }
     RPCController *fixture = (__bridge RPCController *)controller;
     if (on_stop_event_notification_fp != NULL) {
         on_stop_event_notification_fp(event_ctx_p);
@@ -152,7 +186,7 @@ void release_fixture_controller(void* controller)
     on_fixture_event_fp = NULL;
     on_stop_event_notification_fp = NULL;
     
-    writeFixtureLog(@"release_fixture_controller %d\r\n");
+    //writeFixtureLog(@"release_fixture_controller %d\r\n");
 }
 
 
@@ -207,9 +241,7 @@ int executeAction(void *controller,NSString * key, int site)
     }
     return 0;
 }
-
-
-const char * const executeAction_original(void *controller,NSString * cmd, int site)
+const char * const executeAction_originalTimeout(void *controller,NSString * cmd, int site,int timeout)
 {
     if(site<1)
         return "";
@@ -221,11 +253,11 @@ const char * const executeAction_original(void *controller,NSString * cmd, int s
     //
     //        return 0;
     //    }
-//    NSArray * arr = [cmd objectForKey:key];
-//    if (!arr.count) {
-//        arr = [key componentsSeparatedByString:@"&&"];
-//    }
-     NSArray * arr = [cmd componentsSeparatedByString:@"&&"];
+    //    NSArray * arr = [cmd objectForKey:key];
+    //    if (!arr.count) {
+    //        arr = [key componentsSeparatedByString:@"&&"];
+    //    }
+    NSArray * arr = [cmd componentsSeparatedByString:@"&&"];
     NSMutableString *mutRet = [[NSMutableString alloc]initWithString:@""];
     for (int j=0; j<[arr count]; j++)
     {
@@ -239,22 +271,30 @@ const char * const executeAction_original(void *controller,NSString * cmd, int s
         }
         else
         {
-            NSString *ret = [fixture WriteReadString:[arr objectAtIndex:j] atSite:site-1 timeOut:6000];
+            if (timeout<0) {
+                timeout =6;
+            }
+            NSString *ret = [fixture WriteReadString:[arr objectAtIndex:j] atSite:site-1 timeOut:timeout*1000];
             [mutRet appendString:ret];
             
-//            if (j==[arr count]-1)
-//            {
-//                writeFixtureLog([NSString stringWithFormat:@"[cmd] %@, [result] %@\r\n",[arr objectAtIndex:j],ret]);
-//            }
-//            else
-//            {
-//                writeFixtureLog([NSString stringWithFormat:@"[cmd] %@, [result] %@",[arr objectAtIndex:j],ret]);
-//            }
+            //            if (j==[arr count]-1)
+            //            {
+            //                writeFixtureLog([NSString stringWithFormat:@"[cmd] %@, [result] %@\r\n",[arr objectAtIndex:j],ret]);
+            //            }
+            //            else
+            //            {
+            //                writeFixtureLog([NSString stringWithFormat:@"[cmd] %@, [result] %@",[arr objectAtIndex:j],ret]);
+            //            }
             
         }
         
     }
     return mutRet.UTF8String;
+}
+
+const char * const executeAction_original(void *controller,NSString * cmd, int site)
+{
+    return executeAction_originalTimeout(controller,cmd, site,6);
 }
 
 int executeAllAction(void *controller,NSString * key)
@@ -304,12 +344,12 @@ const char * const get_serial_number(void* controller)
     for (NSTextCheckingResult *result in results) {
         SN =[SN stringByAppendingString:[ret substringWithRange:[result rangeAtIndex:1]]];
     }
-    if ([SN isEqualTo:@""]){
-        writeFixtureLog([NSString stringWithFormat:@"Please Check the EEPROM Not Found the Serial Number \r\n"]);
-    }
-    else{
-    writeFixtureLog([NSString stringWithFormat:@"serialnumber: %@ \r\n",SN]);
-    }
+//    if ([SN isEqualTo:@""]){
+//        writeFixtureLog([NSString stringWithFormat:@"Please Check the EEPROM Not Found the Serial Number \r\n"]);
+//    }
+//    else{
+//    writeFixtureLog([NSString stringWithFormat:@"serialnumber: %@ \r\n",SN]);
+//    }
     return [SN UTF8String];
 }
 
@@ -701,7 +741,7 @@ POWER_STATE dut_power(void* controller, int site)
 
 bool is_board_detected(void* controller, int site)
 {
-    writeFixtureLog([NSString stringWithFormat:@"is_board_detected, site: %d",site]);
+   // writeFixtureLog([NSString stringWithFormat:@"is_board_detected, site: %d",site]);
     if(site<1)
         return -1;
     
@@ -711,12 +751,12 @@ bool is_board_detected(void* controller, int site)
     
     if([ret intValue]==0)
     {
-        writeFixtureLog([NSString stringWithFormat:@"is_board_detected , site : %d, [result] %@\r\n",site,@"YES"]);
+       // writeFixtureLog([NSString stringWithFormat:@"is_board_detected , site : %d, [result] %@\r\n",site,@"YES"]);
         return YES;
     }
     else
     {
-        writeFixtureLog([NSString stringWithFormat:@"is_board_detected , site : %d, [result] %@\r\n",site,@"NO"]);
+        //writeFixtureLog([NSString stringWithFormat:@"is_board_detected , site : %d, [result] %@\r\n",site,@"NO"]);
         return NO;
     }
     

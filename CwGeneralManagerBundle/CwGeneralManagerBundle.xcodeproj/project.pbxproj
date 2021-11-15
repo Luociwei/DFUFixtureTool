@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BAB90AA126DFBB07004853E2 /* TextView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BAB90AA026DFBB07004853E2 /* TextView.xib */; };
 		BAE02D1C25B3F53D0063A886 /* state_error.PNG in Resources */ = {isa = PBXBuildFile; fileRef = BAE02D1825B3F53D0063A886 /* state_error.PNG */; };
 		BAE02D1D25B3F53D0063A886 /* state_on.PNG in Resources */ = {isa = PBXBuildFile; fileRef = BAE02D1925B3F53D0063A886 /* state_on.PNG */; };
 		BAE02D1E25B3F53D0063A886 /* recycle.png in Resources */ = {isa = PBXBuildFile; fileRef = BAE02D1A25B3F53D0063A886 /* recycle.png */; };
@@ -15,6 +16,7 @@
 
 /* Begin PBXFileReference section */
 		BA65230B255065F2000B333C /* CwGeneralManagerBundle.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CwGeneralManagerBundle.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		BAB90AA026DFBB07004853E2 /* TextView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TextView.xib; path = ../../CwGeneralManagerFrameWork/CwGeneralManagerFrameWork/Class/TextView.xib; sourceTree = "<group>"; };
 		BAE02D1825B3F53D0063A886 /* state_error.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = state_error.PNG; sourceTree = "<group>"; };
 		BAE02D1925B3F53D0063A886 /* state_on.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = state_on.PNG; sourceTree = "<group>"; };
 		BAE02D1A25B3F53D0063A886 /* recycle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recycle.png; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 				BAE02D1825B3F53D0063A886 /* state_error.PNG */,
 				BAE02D1925B3F53D0063A886 /* state_on.PNG */,
 				BAE02D1A25B3F53D0063A886 /* recycle.png */,
+				BAB90AA026DFBB07004853E2 /* TextView.xib */,
 				BAE02D1B25B3F53D0063A886 /* state_off.PNG */,
 			);
 			path = images;
@@ -125,6 +128,7 @@
 			files = (
 				BAE02D1D25B3F53D0063A886 /* state_on.PNG in Resources */,
 				BAE02D1C25B3F53D0063A886 /* state_error.PNG in Resources */,
+				BAB90AA126DFBB07004853E2 /* TextView.xib in Resources */,
 				BAE02D1E25B3F53D0063A886 /* recycle.png in Resources */,
 				BAE02D1F25B3F53D0063A886 /* state_off.PNG in Resources */,
 			);

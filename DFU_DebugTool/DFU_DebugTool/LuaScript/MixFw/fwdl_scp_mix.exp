@@ -1,0 +1,33 @@
+#!/usr/bin/expect 
+#########################################################################
+# File Name: fwdl_scp.exp
+# Created Time: 2021年01月13日 星期2 11时06分31秒
+# Use:./fwdl_scp.exp  xxx.bin  169.254.1.35
+#########################################################################
+
+set timeout 5
+set  FILE	[ lindex $argv 0 ]
+set  IP		[ lindex $argv 1 ]
+#set  DIR	[ lindex $argv 2 ] 
+set  DIR	/var/fw_update/upload
+set  HOST	root@$IP
+
+spawn scp -r $FILE $HOST:$DIR
+expect {
+	"*yes/no*"		{ send "yes\n";exp_continue }
+	"*password*"	{ send "123456\n" }
+    "#"            { send "exit\n";exp_continue }
+}
+interact
+sleep 1
+
+spawn ssh $HOST sync
+expect {
+	"*yes/no*"		{ send "yes\n";exp_continue }
+	"*password*"	{ send "123456\n" }
+    "#"            { send "reboot\n";exp_continue }
+}
+
+interact
+#exit
+

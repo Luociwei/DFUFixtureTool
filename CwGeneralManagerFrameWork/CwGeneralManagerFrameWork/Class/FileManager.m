@@ -25,10 +25,10 @@
 
 +(void)cw_removeItemAtPath:(NSString *)filePath
 {
-   
+    
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:filePath]) {
-    
+        
         [fileManager removeItemAtPath:filePath error:nil];
     }
     
@@ -108,7 +108,7 @@
         NSString * jsonStr = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
         return [self cw_serializationWithJsonString:jsonStr];
     }else{
-         [Alert cw_RemindException:@"Error" Information:@"not found the file"];
+        [Alert cw_RemindException:@"Error" Information:@"not found the file"];
         NSLog(@"not found the file");
         return nil;
     }
@@ -177,6 +177,41 @@
     system([[NSString stringWithFormat:@"open %@",path] UTF8String]);
 }
 
+//NSFileManager *manager = [NSFileManager defaultManager];
+//NSString *flow_file = [systemFile stringByAppendingPathComponent:@"device.log"];
+//for (NSString *file in [manager enumeratorAtPath:systemFile]) {
+//
+//    if ([file containsString:@"flow.log"]) {
+//        flow_file = [systemFile stringByAppendingPathComponent:file];
+//        break;
+//    }
+//}
+
++(NSArray *)cw_findPathWithfFileName:(NSString *)fileName dirPath:(NSString *)dirPath deepFind:(BOOL)isDeedFind{
+    NSFileManager *manager = [NSFileManager defaultManager];
+    NSMutableArray *mutPathArr = [[NSMutableArray alloc]init];
+    if (isDeedFind) {
+        for (NSString *name in [manager enumeratorAtPath:dirPath]) {
+            
+            if ([name containsString:fileName]) {
+                //flow_file = [systemFile stringByAppendingPathComponent:file];
+                NSString *file_path = [dirPath stringByAppendingPathComponent:name];
+                [mutPathArr addObject:file_path];
+                
+            }
+        }
+    }else{
+        NSArray *tmplist = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:nil];
+        for (NSString *name in tmplist) {
+            if ([name containsString:fileName]) {
+                NSString *file_path = [dirPath stringByAppendingPathComponent:name];
+                [mutPathArr addObject:file_path];
+            }
+        }
+    }
+    
+    return mutPathArr;
+}
 +(NSArray *)cw_getFilenamelistOfType:(NSString *)type fromDirPath:(NSString *)dirPath
 {
     NSMutableArray *filenamelist = [[NSMutableArray alloc]init];
@@ -185,7 +220,7 @@
     for (NSString *filename in tmplist) {
         NSString *fullpath = [dirPath stringByAppendingPathComponent:filename];
         if ([self cw_isFileExistAtPath:fullpath]) {
-//            NSString *ss =[filename pathExtension];
+            //            NSString *ss =[filename pathExtension];
             if ([[filename pathExtension] isEqualToString:type]) {
                 [filenamelist  addObject:filename];
             }
@@ -231,7 +266,7 @@
         if (result==NSFileHandlingPanelOKButton)
         {
             
-           dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),^{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),^{
                 NSArray *urls=[openPanel URLs];
                 
                 for (int i=0; i<[urls count]; i++)
@@ -254,7 +289,7 @@
     NSSavePanel *saveDlg = [[NSSavePanel alloc]init];
     saveDlg.title = @"Save File";
     saveDlg.message = @"Save File";
-    saveDlg.allowedFileTypes = @[@"png"];
+    //    saveDlg.allowedFileTypes = @[@"png"];
     saveDlg.nameFieldStringValue = @"xxxx";
     [saveDlg beginWithCompletionHandler: ^(NSInteger result){
         

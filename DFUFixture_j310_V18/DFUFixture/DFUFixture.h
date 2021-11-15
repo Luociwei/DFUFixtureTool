@@ -51,9 +51,11 @@ extern "C" {
     //when this function returns, the library should have actually established communication with the fixture, if not, createFixtureController
     //should return 0
     void test(int index);
+    const char * const executeAction_originalTimeout(void *controller,NSString * cmd, int site,int timeout);
     const char * const executeAction_original(void *controller,NSString * cmd, int site);
     int executeAction(void *controller,NSString * key, int site);
     void* create_fixture_controller(int index);
+    void* create_fixture_controllerWithPorts(int index,NSArray *ipPorts);
     void release_fixture_controller(void* controller);
     
     

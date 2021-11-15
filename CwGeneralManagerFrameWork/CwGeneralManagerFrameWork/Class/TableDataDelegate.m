@@ -54,7 +54,9 @@ NSString * const TableViewDragDataTypeName  = @"TableViewDragDataTypeName";
             tableView.dataSource = self;
             tableView.headerView.hidden=NO;
             tableView.usesAlternatingRowBackgroundColors=YES;
-            tableView.rowHeight = 20;
+//            tableView.rowHeight = 20;
+            tableView.rowSizeStyle =NSTableViewRowSizeStyleCustom;
+            
             tableView.gridStyleMask = NSTableViewSolidHorizontalGridLineMask |NSTableViewSolidVerticalGridLineMask ;
 //            [tableView setDoubleAction:@selector(doubleClick:)];
             if (_isDargData) {
@@ -221,6 +223,17 @@ NSString * const TableViewDragDataTypeName  = @"TableViewDragDataTypeName";
     if(self.selectionChangedCallback){
         self.selectionChangedCallback(row,data);
     }
+}
+
+- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row{
+//    tableViewHeightOfRowCallback
+    if(self.tableViewHeightOfRowCallback){
+        float h = self.tableViewHeightOfRowCallback(row);
+        if (h>0) {
+            return h;
+        }
+    }
+    return 20;
 }
 
 - (void)tableView:(NSTableView *)tableView didClickTableColumn:(NSTableColumn *)tableColumn{
@@ -529,6 +542,8 @@ NSString * const TableViewDragDataTypeName  = @"TableViewDragDataTypeName";
         self.buttonClickCallback(row,data);
     }
 }
+
+
 
 #pragma mark -- Drag/Drop
 

@@ -1,0 +1,16 @@
+#!/usr/bin/expect 
+
+set timeout 20
+set  IP	[ lindex $argv 0 ]
+set  HOST	root@$IP
+
+
+spawn ssh $HOST reboot
+expect {
+	"*yes/no*"		{ send "yes\n";exp_continue }
+	"*password*"	{ send "123456\n" }
+}
+
+expect eof
+exit
+

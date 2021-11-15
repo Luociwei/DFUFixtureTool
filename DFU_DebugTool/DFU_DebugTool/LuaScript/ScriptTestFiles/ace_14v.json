@@ -1,0 +1,10 @@
+[
+    "io.set(bit24=1)",
+    "delay:1",
+    "io.set(bit24=0)",
+    "delay:0.1"
+ ]
+
+
+
+

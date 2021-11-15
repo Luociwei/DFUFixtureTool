@@ -1,0 +1,1256 @@
+"[%w_.]+"%s*=%s*%(%s*%{%s*doc%s*=%s*.-;%s*name%s*=.-;
+"([\w.]+)"\s*=\s*\(\s+\{\s+doc\s*=\s*(.*);\s+name\s*=\s*(.*);\s*\}\s*
+Get CMD List Successfully!
+[2021-10-06 10:41:31] [Send:] server.all_methods, args: [], kwargs: {"timeout_ms":}
+[2021-10-06 10:41:31] [Receive:] {
+    "" =     (
+    );
+    "adc." =     (
+                {
+            doc = "\n        example: read_volt(CH0)\n        ";
+            name = "read_volt";
+        }
+    );
+    "batt." =     (
+                {
+            doc = "\n        example: volt_output()\n        ";
+            name = "volt_set";
+        }
+    );
+    "batt_dac." =     (
+    );
+    "datapath_manager." =     (
+                {
+            doc = "<null>";
+            name = "shutdown_all";
+        }
+    );
+    "eeprom." =     (
+                {
+            doc = "\n        :param address: int(0-1024),   Write datas from this address\n        :param length: int,   Read datas length\n\n        :return: str, Return Data\n        ";
+            name = "read_string";
+        },
+                {
+            doc = "<null>";
+            name = "write_string";
+        }
+    );
+    "fan." =     (
+                {
+            doc = "\n        speed_get\n        Args:\n            speed_get(self, channel):\n        Example:\n            speed_get(1):\n        ";
+            name = "speed_get";
+        },
+                {
+            doc = "\n        pwm output disable\n        Args:\n            disable(self):\n        Example:\n            output_disable('')\n\n        ";
+            name = disable;
+        },
+                {
+            doc = "\n        pwm output enable\n        Args:\n            fre:       Hz,\n            Duty:      float\n        Example:\n            output_enable(1000,50)\n\n        ";
+            name = "speed_set";
+        }
+    );
+    "fan_pwm_output." =     (
+                {
+            doc = "\n        Set awg step\n\n        Args:\n            sample_rate:       int,          external DAC sample rate, unit is SPS\n            start_volt:        float,        step start volt (-0.99999~0.99999)\n            stop_volt:         float,        step start volt (-0.99999~0.99999)\n            duration_ms:       float,        duration time\n\n        Examples:\n            signal_source.set_awg_step(1000, 0.5, 0.5, 0.5)\n\n        ";
+            name = "set_awg_step";
+        },
+                {
+            doc = "\n        Set output signal time\n\n        Args:\n            signal_time:    int, unit us, signal time of signal source.\n\n        Examples:\n            signalsource.set_signal_time(10000)\n\n        ";
+            name = "set_signal_time";
+        },
+                {
+            doc = "\n        Output signal wave\n\n        Examples:\n            signal_source.output_signal()\n\n        ";
+            name = "output_signal";
+        },
+                {
+            doc = "\n        Test_register\n\n        Args:\n            sample_rate:       int,         test data\n\n        Examples:\n            signal_source.test_register(0xffff)\n\n        ";
+            name = "test_register";
+        },
+                {
+            doc = "\n        Set swg paramter\n\n        Args:\n            sample_rate:       int, unit SPS,             external DAC sample rate.\n            signal_frequency:  int, unit Hz,              output signal frequency.\n            vpp_scale:         float, [0.000~0.999,       full scale ratio.\n            square_duty:       float, [0.001~0.999],      duty of square.\n            offset_volt:       float, [-0.99999~0.99999], offset volt.\n\n        Examples:\n            signal_source.set_swg_paramter(1000, 1000, 0.5, 0.5, 0.5)\n\n        ";
+            name = "set_swg_paramter";
+        },
+                {
+            doc = "\n        Set output signal type\n\n        Args:\n            signal_type:    string, ['sine', 'square', 'AWG'], 'sine'--sine wave output\n                                                               'square' -- square output\n                                                               'AWG' -- arbitrary waveform output.\n\n        Examples:\n            signal_source.set_signal_type('sine')\n\n        ";
+            name = "set_signal_type";
+        },
+                {
+            doc = "\n        Disable mix signal source function class\n\n        Examples:\n            signal_source.close()\n\n        ";
+            name = close;
+        },
+                {
+            doc = "\n        Set awg parameter\n\n        Args:\n            sample_rate:       int,          external DAC sample rate, unit is SPS\n            awg_step:          list,         arbitrary waveform step,\n                                                   list unit is (start_volt,stop_volt,duration_ms)\n                                                   start_volt(float) -- step start volt (-1 ~ +1)\n                                                   stop_volt(float) -- step stop volt (-1 ~ +1)\n                                                   duration_ms(float) -- duration time\n\n        Examples:\n            signal_source.set_awg_step(1000, [0.5, 0.5, 0.5])\n\n        ";
+            name = "set_awg_parameter";
+        },
+                {
+            doc = "\n        Enable mix signal source function class\n\n        Examples:\n            signal_source.open()\n\n        ";
+            name = open;
+        }
+    );
+    "fan_signal_meter." =     (
+                {
+            doc = "\n        mix signal meter measure duty\n\n        Returns:\n            float, [0~100].\n\n        Examples:\n            duty = self.axi4_bus.duty\n            duty = 10\n\n        ";
+            name = duty;
+        },
+                {
+            doc = "\n        mix signal meter measure rms\n\n        Returns:\n            list,  include rms_data(0 ~ +1), avg_data(-1 ~ +1).\n\n        Examples:\n            result = self.axi4_bus.rms\n            result is list\n\n        ";
+            name = rms;
+        },
+                {
+            doc = "\n        mix signal meter measure frequency\n\n        Args:\n            measure_type:  string, ['HP', 'LP'], type of measure.\n\n        Returns:\n            int, value, unit Hz.\n\n        Examples:\n            frequency = self.axi4_bus.measure_frequency('HP')\n            frequency = 1000\n\n        ";
+            name = "measure_frequency";
+        },
+                {
+            doc = "\n        mix signal meter start measure\n\n        Args:\n            time_ms:         int, [1~2000], unit ms.\n            sample_rate:     int, [1~125000000], unit SPS.\n            measure_mask:    int, [1~0xff], bit set means mask the function.\n\n        Examples:\n            self.axi4_bus.start_measure(2000, 150000)\n\n        +---------------+-------------------+\n        | measure_mask  |       function    |\n        +===============+===================+\n        | bit[0:3]      | Reserved          |\n        +---------------+-------------------+\n        | bit[4]        | Frequency mask    |\n        +---------------+-------------------+\n        | bit[5]        | Duty mask         |\n        +---------------+-------------------+\n        | bit[6]        | Vpp mask          |\n        +---------------+-------------------+\n        | bit[7]        | rms mask          |\n        +---------------+-------------------+\n\n        ";
+            name = "start_measure";
+        },
+                {
+            doc = "\n        mix signal meter measure vpp\n\n        Returns:\n            list,  include vpp_data(0 ~ +2), max_data(-1 ~ +1), min_data(-1 ~ +1).\n\n        Examples:\n            result = self.axi4_bus.vpp\n            result is list\n\n        ";
+            name = vpp;
+        },
+                {
+            doc = "\n        mix signal meter get current voltage level.\n\n        Returns:\n            int, [0, 1],  0 for low level, 1 for high level.\n\n        ";
+            name = level;
+        },
+                {
+            doc = "\n        mix signal meter test register\n\n        Args:\n            test_data:  int, [0x23], test data.\n\n        Examples:\n            self.test_register(0x23)\n\n        ";
+            name = "test_register";
+        },
+                {
+            doc = "\n        mix signal meter measure frequency in high-precision\n\n        Returns:\n            float, value, unit Hz.\n\n        Examples:\n            self.measure_frequency_hp()\n\n        ";
+            name = "measure_frequency_hp";
+        },
+                {
+            doc = "\n        mix signal meter disable upframe\n\n        Examples:\n            self.axi4_bus.disable_upframe()\n\n        ";
+            name = "disable_upframe";
+        },
+                {
+            doc = "\n        mix signal meter set the vpp interval\n\n        Args:\n            test_interval_ms:  int, [1~10000], unit ms.\n\n        Examples:\n            self.axi4_bus.set_vpp_interval(1000)\n\n        ";
+            name = "set_vpp_interval";
+        },
+                {
+            doc = "\n        mix signal meter enable upframe\n\n        Args:\n            upframe_mode: string, ['DEBUG', 'BYPASS'], choose mode.\n\n        Examples:\n            self.axi4_bus.enable_upframe('DEBUG')\n\n        ";
+            name = "enable_upframe";
+        },
+                {
+            doc = "\n        mix signal meter close\n\n        Examples:\n            self.axi4_bus.close()\n\n        ";
+            name = close;
+        },
+                {
+            doc = "\n        mix signal meter measure rising edge count in low-precision\n        if want to get accurate count, measure time must minus 1.\n\n        Returns:\n            int, value.\n\n        Examples:\n            self.measure_rising_edge_count()\n\n        ";
+            name = "measure_rising_edge_count";
+        },
+                {
+            doc = "\n        mix signal meter open\n\n        Examples:\n            self.axi4_bus.open()\n\n        ";
+            name = open;
+        },
+                {
+            doc = "\n        mix signal meter measure frequency in low-precision\n\n        Returns:\n            float, value, unit Hz.\n\n        Examples:\n            self.measure_frequency_lp()\n\n        ";
+            name = "measure_frequency_lp";
+        }
+    );
+    "file_transfer." =     (
+                {
+            doc = "<null>";
+            name = "check_task_status";
+        },
+                {
+            doc = "<null>";
+            name = stop;
+        },
+                {
+            doc = "<null>";
+            name = start;
+        },
+                {
+            doc = "\n        shutdown all file transfer channels\n        ";
+            name = "shutdown_all";
+        },
+                {
+            doc = "<null>";
+            name = "list_dir";
+        },
+                {
+            doc = "<null>";
+            name = close;
+        },
+                {
+            doc = "<null>";
+            name = open;
+        }
+    );
+    "fixture." =     (
+    );
+    "fixturecontrol." =     (
+                {
+            doc = "<null>";
+            name = "get_fixture_status";
+        },
+                {
+            doc = "<null>";
+            name = Up;
+        },
+                {
+            doc = "<null>";
+            name = Down;
+        },
+                {
+            doc = "<null>";
+            name = release;
+        },
+                {
+            doc = "<null>";
+            name = "get_key_status";
+        },
+                {
+            doc = "<null>";
+            name = In;
+        },
+                {
+            doc = "<null>";
+            name = press;
+        },
+                {
+            doc = "<null>";
+            name = Out;
+        }
+    );
+    "gpio_992." =     (
+                {
+            doc = "\n        GPIO get pin level\n\n        Returns:\n            int, value.\n\n        Examples:\n            level = io.get_level()\n            print(level)\n\n        ";
+            name = "get_level";
+        },
+                {
+            doc = "\n        GPIO set pin direction\n\n        Args:\n            pin_dir:     string, [\"input\", \"output\"], Set the io direction.\n\n        Examples:\n            io.set_dir('input')\n\n        ";
+            name = "set_dir";
+        },
+                {
+            doc = "\n        GPIO set pin level\n\n        Args:\n            level:   int, [0], 1 is high level, 0 is low level.\n\n        Examples:\n            io.set_level(1)\n\n        ";
+            name = "set_level";
+        },
+                {
+            doc = "\n        GPIO get pin direction\n\n        Returns:\n            string, str.\n\n        Examples:\n            dir = io.get_dir()\n            print(dir)\n\n        ";
+            name = "get_dir";
+        }
+    );
+    "gpio_993." =     (
+                {
+            doc = "\n        GPIO get pin level\n\n        Returns:\n            int, value.\n\n        Examples:\n            level = io.get_level()\n            print(level)\n\n        ";
+            name = "get_level";
+        },
+                {
+            doc = "\n        GPIO set pin direction\n\n        Args:\n            pin_dir:     string, [\"input\", \"output\"], Set the io direction.\n\n        Examples:\n            io.set_dir('input')\n\n        ";
+            name = "set_dir";
+        },
+                {
+            doc = "\n        GPIO set pin level\n\n        Args:\n            level:   int, [0], 1 is high level, 0 is low level.\n\n        Examples:\n            io.set_level(1)\n\n        ";
+            name = "set_level";
+        },
+                {
+            doc = "\n        GPIO get pin direction\n\n        Returns:\n            string, str.\n\n        Examples:\n            dir = io.get_dir()\n            print(dir)\n\n        ";
+            name = "get_dir";
+        }
+    );
+    "gpio_994." =     (
+                {
+            doc = "\n        GPIO get pin level\n\n        Returns:\n            int, value.\n\n        Examples:\n            level = io.get_level()\n            print(level)\n\n        ";
+            name = "get_level";
+        },
+                {
+            doc = "\n        GPIO set pin direction\n\n        Args:\n            pin_dir:     string, [\"input\", \"output\"], Set the io direction.\n\n        Examples:\n            io.set_dir('input')\n\n        ";
+            name = "set_dir";
+        },
+                {
+            doc = "\n        GPIO set pin level\n\n        Args:\n            level:   int, [0], 1 is high level, 0 is low level.\n\n        Examples:\n            io.set_level(1)\n\n        ";
+            name = "set_level";
+        },
+                {
+            doc = "\n        GPIO get pin direction\n\n        Returns:\n            string, str.\n\n        Examples:\n            dir = io.get_dir()\n            print(dir)\n\n        ";
+            name = "get_dir";
+        }
+    );
+    "gpio_995." =     (
+                {
+            doc = "\n        GPIO get pin level\n\n        Returns:\n            int, value.\n\n        Examples:\n            level = io.get_level()\n            print(level)\n\n        ";
+            name = "get_level";
+        },
+                {
+            doc = "\n        GPIO set pin direction\n\n        Args:\n            pin_dir:     string, [\"input\", \"output\"], Set the io direction.\n\n        Examples:\n            io.set_dir('input')\n\n        ";
+            name = "set_dir";
+        },
+                {
+            doc = "\n        GPIO set pin level\n\n        Args:\n            level:   int, [0], 1 is high level, 0 is low level.\n\n        Examples:\n            io.set_level(1)\n\n        ";
+            name = "set_level";
+        },
+                {
+            doc = "\n        GPIO get pin direction\n\n        Returns:\n            string, str.\n\n        Examples:\n            dir = io.get_dir()\n            print(dir)\n\n        ";
+            name = "get_dir";
+        }
+    );
+    "gpio_996." =     (
+                {
+            doc = "\n        GPIO get pin level\n\n        Returns:\n            int, value.\n\n        Examples:\n            level = io.get_level()\n            print(level)\n\n        ";
+            name = "get_level";
+        },
+                {
+            doc = "\n        GPIO set pin direction\n\n        Args:\n            pin_dir:     string, [\"input\", \"output\"], Set the io direction.\n\n        Examples:\n            io.set_dir('input')\n\n        ";
+            name = "set_dir";
+        },
+                {
+            doc = "\n        GPIO set pin level\n\n        Args:\n            level:   int, [0], 1 is high level, 0 is low level.\n\n        Examples:\n            io.set_level(1)\n\n        ";
+            name = "set_level";
+        },
+                {
+            doc = "\n        GPIO get pin direction\n\n        Returns:\n            string, str.\n\n        Examples:\n            dir = io.get_dir()\n            print(dir)\n\n        ";
+            name = "get_dir";
+        }
+    );
+    "gpio_997." =     (
+                {
+            doc = "\n        GPIO get pin level\n\n        Returns:\n            int, value.\n\n        Examples:\n            level = io.get_level()\n            print(level)\n\n        ";
+            name = "get_level";
+        },
+                {
+            doc = "\n        GPIO set pin direction\n\n        Args:\n            pin_dir:     string, [\"input\", \"output\"], Set the io direction.\n\n        Examples:\n            io.set_dir('input')\n\n        ";
+            name = "set_dir";
+        },
+                {
+            doc = "\n        GPIO set pin level\n\n        Args:\n            level:   int, [0], 1 is high level, 0 is low level.\n\n        Examples:\n            io.set_level(1)\n\n        ";
+            name = "set_level";
+        },
+                {
+            doc = "\n        GPIO get pin direction\n\n        Returns:\n            string, str.\n\n        Examples:\n            dir = io.get_dir()\n            print(dir)\n\n        ";
+            name = "get_dir";
+        }
+    );
+    "gpio_998." =     (
+                {
+            doc = "\n        GPIO get pin level\n\n        Returns:\n            int, value.\n\n        Examples:\n            level = io.get_level()\n            print(level)\n\n        ";
+            name = "get_level";
+        },
+                {
+            doc = "\n        GPIO set pin direction\n\n        Args:\n            pin_dir:     string, [\"input\", \"output\"], Set the io direction.\n\n        Examples:\n            io.set_dir('input')\n\n        ";
+            name = "set_dir";
+        },
+                {
+            doc = "\n        GPIO set pin level\n\n        Args:\n            level:   int, [0], 1 is high level, 0 is low level.\n\n        Examples:\n            io.set_level(1)\n\n        ";
+            name = "set_level";
+        },
+                {
+            doc = "\n        GPIO get pin direction\n\n        Returns:\n            string, str.\n\n        Examples:\n            dir = io.get_dir()\n            print(dir)\n\n        ";
+            name = "get_dir";
+        }
+    );
+    "gpio_999." =     (
+                {
+            doc = "\n        GPIO get pin level\n\n        Returns:\n            int, value.\n\n        Examples:\n            level = io.get_level()\n            print(level)\n\n        ";
+            name = "get_level";
+        },
+                {
+            doc = "\n        GPIO set pin direction\n\n        Args:\n            pin_dir:     string, [\"input\", \"output\"], Set the io direction.\n\n        Examples:\n            io.set_dir('input')\n\n        ";
+            name = "set_dir";
+        },
+                {
+            doc = "\n        GPIO set pin level\n\n        Args:\n            level:   int, [0], 1 is high level, 0 is low level.\n\n        Examples:\n            io.set_level(1)\n\n        ";
+            name = "set_level";
+        },
+                {
+            doc = "\n        GPIO get pin direction\n\n        Returns:\n            string, str.\n\n        Examples:\n            dir = io.get_dir()\n            print(dir)\n\n        ";
+            name = "get_dir";
+        }
+    );
+    "i2c_0." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_1." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_10." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_11." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_12." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_13." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_14." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_15." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_16." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_17." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_2." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_3." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_4." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_5." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_6." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_7." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_8." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "i2c_9." =     (
+                {
+            doc = "\n        I2C read specific length datas from address\n\n        Args:\n            addr:        heximal, [0x0000~0xFFFF], Read data from this address.\n            data_len:   int, [0~1024], Length of data to be read.\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        I2C write data to address\n\n        Args:\n            addr:   hexmial, [0~0xFF],  Write datas to this address.\n            data:   list,               Datas to be write.\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        I2C write datas to address and read specific length datas\n\n        Args:\n            addr:       heximial, [0~0xFF].\n            wr_data:    list,               datas to be write.\n            rd_len:     int, [0~1024],      Length of data to be read.\n        ";
+            name = "write_and_read";
+        }
+    );
+    "io." =     (
+                {
+            doc = "\n        get cat9555 bit input level function\n        Args:\n            param bit_cnf:     str,    a string like 'bitX,...', X=1~160, control cat9555 single pin output\n        Example:   \n            io.io_get(\"bit1,bit2\")\n        ";
+            name = get;
+        },
+                {
+            doc = "\n        cat9555 bit set function\n        Args:\n            bit_cnf:     str,    a string like 'bitX=Y,...', X=1~160, Y=0/1, control cat9555 single pin output,\n                                    if Y is 1, means bitX output high level\n        Example:   \n            io_set(\"bit56=1,bit57=0,bit58=1\")\n        ";
+            name = set;
+        },
+                {
+            doc = "\n        get cat9555 pin dir config function\n        Args:\n            dir_cnf:     str,    a string like 'bitX,...', X=1~160, get cat9555 single pin direction\n        Example:   \n            io_dir_set(\"bit1,bit2,bit3,bit4\")\n        ";
+            name = "dir_get";
+        },
+                {
+            doc = "\n        ct9555 bit directory config function\n            dir_cnf:     str,    a string like 'bitX=Y,...', X=1~160, Y=0/1, config cat9555 single pin direction\n        Example:   \n            io_dir_set(\"bit1=input,bit2=output\")\n        ";
+            name = "dir_set";
+        }
+    );
+    "io_exp1." =     (
+                {
+            doc = "\n        Get the value of input port register\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports()\n            print(result)\n\n        ";
+            name = "get_ports";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            dir:      string, ['output', 'input'], Set pin dir.\n\n        Examples:\n            cat9555.set_pin_dir(15,'output')\n\n        ";
+            name = "set_pin_dir";
+        },
+                {
+            doc = "\n        Get the ports state of CAT9555 pin\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_state()\n            print(result)\n\n        ";
+            name = "get_ports_state";
+        },
+                {
+            doc = "\n        CAT9555 read specific length datas from address\n\n        Args:\n            reg_addr:   hexmial, [0~0xFF], Read datas from this address.\n            rd_len:     int, [0~1024],     Length to read.\n\n        Returns:\n            list, [value, ...].\n\n        Examples:\n            rd_data = cat9555.read_register(0x00, 10)\n            print(rd_data)\n\n        ";
+            name = "read_register";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            string, ['output', 'input'].\n\n        Examples:\n            result = cat9555.get_pin_dir(15)\n            print(result)\n\n        ";
+            name = "get_pin_dir";
+        },
+                {
+            doc = "\n        Get the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            cat9555.get_pin(12)\n\n        ";
+            name = "get_pin";
+        },
+                {
+            doc = "\n        Get the polarity inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            boolean, [True, False].\n\n        Examples:\n            result = cat9555.get_pin_inversion(12)\n            print(result)\n\n        ";
+            name = "get_pin_inversion";
+        },
+                {
+            doc = "\n        Get the polarity inversion about all ports\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_inversion()\n            print(result)\n\n        ";
+            name = "get_ports_inversion";
+        },
+                {
+            doc = "\n        CAT9555 write datas to address, support cross pages writing operation\n\n        Args:\n            reg_addr:    int, [0~1024], Write data to this address.\n            write_data:  list,          Data to write.\n\n        Examples:\n            wr_data = [0x01, 0x02, 0x03, 0x04]\n            cat9555.write_register(0x00, wr_data)\n\n        ";
+            name = "write_register";
+        },
+                {
+            doc = "\n        Set the polarity inversion.\n\n        Args:\n            ports_inversion_mask: list, Element takes one byte.\n                                        eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports_inversion([0x12,0x13])\n\n        ";
+            name = "set_ports_inversion";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 all pins\n\n        Args:\n            pins_dir_mask:  list, Element takes one byte.eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_pins_dir([0x12,0x13])\n\n        ";
+            name = "set_pins_dir";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 all pins.\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_pins_dir()\n            print(result)\n\n        ";
+            name = "get_pins_dir";
+        },
+                {
+            doc = "\n        Set the value of input port register.\n\n        Args:\n            ports_level_mask:   list, Element takes one byte.\n                                      eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports([0x12,0x13])\n\n        ";
+            name = "set_ports";
+        },
+                {
+            doc = "\n        Get the pin state of CAT9555\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            result = cat9555.get_pin_state(15)\n            print(result)\n\n        ";
+            name = "get_pin_state";
+        },
+                {
+            doc = "\n        Set the inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15], Pin id you can choose of cat9555.\n            is_inversion: boolean, [True, False], Set pin inversion like True or False.\n\n        Examples:\n            cat9555.set_pin_inversion(12,True)\n\n        ";
+            name = "set_pin_inversion";
+        },
+                {
+            doc = "\n        Set the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            level:    int, [0, 1],   set pin level like 0 or 1.\n\n        Examples:\n            cat9555.set_pin(12,1)\n\n        ";
+            name = "set_pin";
+        }
+    );
+    "io_exp2." =     (
+                {
+            doc = "\n        Get the value of input port register\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports()\n            print(result)\n\n        ";
+            name = "get_ports";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            dir:      string, ['output', 'input'], Set pin dir.\n\n        Examples:\n            cat9555.set_pin_dir(15,'output')\n\n        ";
+            name = "set_pin_dir";
+        },
+                {
+            doc = "\n        Get the ports state of CAT9555 pin\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_state()\n            print(result)\n\n        ";
+            name = "get_ports_state";
+        },
+                {
+            doc = "\n        CAT9555 read specific length datas from address\n\n        Args:\n            reg_addr:   hexmial, [0~0xFF], Read datas from this address.\n            rd_len:     int, [0~1024],     Length to read.\n\n        Returns:\n            list, [value, ...].\n\n        Examples:\n            rd_data = cat9555.read_register(0x00, 10)\n            print(rd_data)\n\n        ";
+            name = "read_register";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            string, ['output', 'input'].\n\n        Examples:\n            result = cat9555.get_pin_dir(15)\n            print(result)\n\n        ";
+            name = "get_pin_dir";
+        },
+                {
+            doc = "\n        Get the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            cat9555.get_pin(12)\n\n        ";
+            name = "get_pin";
+        },
+                {
+            doc = "\n        Get the polarity inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            boolean, [True, False].\n\n        Examples:\n            result = cat9555.get_pin_inversion(12)\n            print(result)\n\n        ";
+            name = "get_pin_inversion";
+        },
+                {
+            doc = "\n        Get the polarity inversion about all ports\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_inversion()\n            print(result)\n\n        ";
+            name = "get_ports_inversion";
+        },
+                {
+            doc = "\n        CAT9555 write datas to address, support cross pages writing operation\n\n        Args:\n            reg_addr:    int, [0~1024], Write data to this address.\n            write_data:  list,          Data to write.\n\n        Examples:\n            wr_data = [0x01, 0x02, 0x03, 0x04]\n            cat9555.write_register(0x00, wr_data)\n\n        ";
+            name = "write_register";
+        },
+                {
+            doc = "\n        Set the polarity inversion.\n\n        Args:\n            ports_inversion_mask: list, Element takes one byte.\n                                        eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports_inversion([0x12,0x13])\n\n        ";
+            name = "set_ports_inversion";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 all pins\n\n        Args:\n            pins_dir_mask:  list, Element takes one byte.eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_pins_dir([0x12,0x13])\n\n        ";
+            name = "set_pins_dir";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 all pins.\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_pins_dir()\n            print(result)\n\n        ";
+            name = "get_pins_dir";
+        },
+                {
+            doc = "\n        Set the value of input port register.\n\n        Args:\n            ports_level_mask:   list, Element takes one byte.\n                                      eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports([0x12,0x13])\n\n        ";
+            name = "set_ports";
+        },
+                {
+            doc = "\n        Get the pin state of CAT9555\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            result = cat9555.get_pin_state(15)\n            print(result)\n\n        ";
+            name = "get_pin_state";
+        },
+                {
+            doc = "\n        Set the inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15], Pin id you can choose of cat9555.\n            is_inversion: boolean, [True, False], Set pin inversion like True or False.\n\n        Examples:\n            cat9555.set_pin_inversion(12,True)\n\n        ";
+            name = "set_pin_inversion";
+        },
+                {
+            doc = "\n        Set the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            level:    int, [0, 1],   set pin level like 0 or 1.\n\n        Examples:\n            cat9555.set_pin(12,1)\n\n        ";
+            name = "set_pin";
+        }
+    );
+    "io_exp3." =     (
+                {
+            doc = "\n        Get the value of input port register\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports()\n            print(result)\n\n        ";
+            name = "get_ports";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            dir:      string, ['output', 'input'], Set pin dir.\n\n        Examples:\n            cat9555.set_pin_dir(15,'output')\n\n        ";
+            name = "set_pin_dir";
+        },
+                {
+            doc = "\n        Get the ports state of CAT9555 pin\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_state()\n            print(result)\n\n        ";
+            name = "get_ports_state";
+        },
+                {
+            doc = "\n        CAT9555 read specific length datas from address\n\n        Args:\n            reg_addr:   hexmial, [0~0xFF], Read datas from this address.\n            rd_len:     int, [0~1024],     Length to read.\n\n        Returns:\n            list, [value, ...].\n\n        Examples:\n            rd_data = cat9555.read_register(0x00, 10)\n            print(rd_data)\n\n        ";
+            name = "read_register";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            string, ['output', 'input'].\n\n        Examples:\n            result = cat9555.get_pin_dir(15)\n            print(result)\n\n        ";
+            name = "get_pin_dir";
+        },
+                {
+            doc = "\n        Get the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            cat9555.get_pin(12)\n\n        ";
+            name = "get_pin";
+        },
+                {
+            doc = "\n        Get the polarity inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            boolean, [True, False].\n\n        Examples:\n            result = cat9555.get_pin_inversion(12)\n            print(result)\n\n        ";
+            name = "get_pin_inversion";
+        },
+                {
+            doc = "\n        Get the polarity inversion about all ports\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_inversion()\n            print(result)\n\n        ";
+            name = "get_ports_inversion";
+        },
+                {
+            doc = "\n        CAT9555 write datas to address, support cross pages writing operation\n\n        Args:\n            reg_addr:    int, [0~1024], Write data to this address.\n            write_data:  list,          Data to write.\n\n        Examples:\n            wr_data = [0x01, 0x02, 0x03, 0x04]\n            cat9555.write_register(0x00, wr_data)\n\n        ";
+            name = "write_register";
+        },
+                {
+            doc = "\n        Set the polarity inversion.\n\n        Args:\n            ports_inversion_mask: list, Element takes one byte.\n                                        eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports_inversion([0x12,0x13])\n\n        ";
+            name = "set_ports_inversion";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 all pins\n\n        Args:\n            pins_dir_mask:  list, Element takes one byte.eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_pins_dir([0x12,0x13])\n\n        ";
+            name = "set_pins_dir";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 all pins.\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_pins_dir()\n            print(result)\n\n        ";
+            name = "get_pins_dir";
+        },
+                {
+            doc = "\n        Set the value of input port register.\n\n        Args:\n            ports_level_mask:   list, Element takes one byte.\n                                      eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports([0x12,0x13])\n\n        ";
+            name = "set_ports";
+        },
+                {
+            doc = "\n        Get the pin state of CAT9555\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            result = cat9555.get_pin_state(15)\n            print(result)\n\n        ";
+            name = "get_pin_state";
+        },
+                {
+            doc = "\n        Set the inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15], Pin id you can choose of cat9555.\n            is_inversion: boolean, [True, False], Set pin inversion like True or False.\n\n        Examples:\n            cat9555.set_pin_inversion(12,True)\n\n        ";
+            name = "set_pin_inversion";
+        },
+                {
+            doc = "\n        Set the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            level:    int, [0, 1],   set pin level like 0 or 1.\n\n        Examples:\n            cat9555.set_pin(12,1)\n\n        ";
+            name = "set_pin";
+        }
+    );
+    "io_exp4." =     (
+                {
+            doc = "\n        Get the value of input port register\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports()\n            print(result)\n\n        ";
+            name = "get_ports";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            dir:      string, ['output', 'input'], Set pin dir.\n\n        Examples:\n            cat9555.set_pin_dir(15,'output')\n\n        ";
+            name = "set_pin_dir";
+        },
+                {
+            doc = "\n        Get the ports state of CAT9555 pin\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_state()\n            print(result)\n\n        ";
+            name = "get_ports_state";
+        },
+                {
+            doc = "\n        CAT9555 read specific length datas from address\n\n        Args:\n            reg_addr:   hexmial, [0~0xFF], Read datas from this address.\n            rd_len:     int, [0~1024],     Length to read.\n\n        Returns:\n            list, [value, ...].\n\n        Examples:\n            rd_data = cat9555.read_register(0x00, 10)\n            print(rd_data)\n\n        ";
+            name = "read_register";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            string, ['output', 'input'].\n\n        Examples:\n            result = cat9555.get_pin_dir(15)\n            print(result)\n\n        ";
+            name = "get_pin_dir";
+        },
+                {
+            doc = "\n        Get the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            cat9555.get_pin(12)\n\n        ";
+            name = "get_pin";
+        },
+                {
+            doc = "\n        Get the polarity inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            boolean, [True, False].\n\n        Examples:\n            result = cat9555.get_pin_inversion(12)\n            print(result)\n\n        ";
+            name = "get_pin_inversion";
+        },
+                {
+            doc = "\n        Get the polarity inversion about all ports\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_inversion()\n            print(result)\n\n        ";
+            name = "get_ports_inversion";
+        },
+                {
+            doc = "\n        CAT9555 write datas to address, support cross pages writing operation\n\n        Args:\n            reg_addr:    int, [0~1024], Write data to this address.\n            write_data:  list,          Data to write.\n\n        Examples:\n            wr_data = [0x01, 0x02, 0x03, 0x04]\n            cat9555.write_register(0x00, wr_data)\n\n        ";
+            name = "write_register";
+        },
+                {
+            doc = "\n        Set the polarity inversion.\n\n        Args:\n            ports_inversion_mask: list, Element takes one byte.\n                                        eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports_inversion([0x12,0x13])\n\n        ";
+            name = "set_ports_inversion";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 all pins\n\n        Args:\n            pins_dir_mask:  list, Element takes one byte.eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_pins_dir([0x12,0x13])\n\n        ";
+            name = "set_pins_dir";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 all pins.\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_pins_dir()\n            print(result)\n\n        ";
+            name = "get_pins_dir";
+        },
+                {
+            doc = "\n        Set the value of input port register.\n\n        Args:\n            ports_level_mask:   list, Element takes one byte.\n                                      eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports([0x12,0x13])\n\n        ";
+            name = "set_ports";
+        },
+                {
+            doc = "\n        Get the pin state of CAT9555\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            result = cat9555.get_pin_state(15)\n            print(result)\n\n        ";
+            name = "get_pin_state";
+        },
+                {
+            doc = "\n        Set the inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15], Pin id you can choose of cat9555.\n            is_inversion: boolean, [True, False], Set pin inversion like True or False.\n\n        Examples:\n            cat9555.set_pin_inversion(12,True)\n\n        ";
+            name = "set_pin_inversion";
+        },
+                {
+            doc = "\n        Set the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            level:    int, [0, 1],   set pin level like 0 or 1.\n\n        Examples:\n            cat9555.set_pin(12,1)\n\n        ";
+            name = "set_pin";
+        }
+    );
+    "io_exp5." =     (
+                {
+            doc = "\n        Get the value of input port register\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports()\n            print(result)\n\n        ";
+            name = "get_ports";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            dir:      string, ['output', 'input'], Set pin dir.\n\n        Examples:\n            cat9555.set_pin_dir(15,'output')\n\n        ";
+            name = "set_pin_dir";
+        },
+                {
+            doc = "\n        Get the ports state of CAT9555 pin\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_state()\n            print(result)\n\n        ";
+            name = "get_ports_state";
+        },
+                {
+            doc = "\n        CAT9555 read specific length datas from address\n\n        Args:\n            reg_addr:   hexmial, [0~0xFF], Read datas from this address.\n            rd_len:     int, [0~1024],     Length to read.\n\n        Returns:\n            list, [value, ...].\n\n        Examples:\n            rd_data = cat9555.read_register(0x00, 10)\n            print(rd_data)\n\n        ";
+            name = "read_register";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            string, ['output', 'input'].\n\n        Examples:\n            result = cat9555.get_pin_dir(15)\n            print(result)\n\n        ";
+            name = "get_pin_dir";
+        },
+                {
+            doc = "\n        Get the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            cat9555.get_pin(12)\n\n        ";
+            name = "get_pin";
+        },
+                {
+            doc = "\n        Get the polarity inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            boolean, [True, False].\n\n        Examples:\n            result = cat9555.get_pin_inversion(12)\n            print(result)\n\n        ";
+            name = "get_pin_inversion";
+        },
+                {
+            doc = "\n        Get the polarity inversion about all ports\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_inversion()\n            print(result)\n\n        ";
+            name = "get_ports_inversion";
+        },
+                {
+            doc = "\n        CAT9555 write datas to address, support cross pages writing operation\n\n        Args:\n            reg_addr:    int, [0~1024], Write data to this address.\n            write_data:  list,          Data to write.\n\n        Examples:\n            wr_data = [0x01, 0x02, 0x03, 0x04]\n            cat9555.write_register(0x00, wr_data)\n\n        ";
+            name = "write_register";
+        },
+                {
+            doc = "\n        Set the polarity inversion.\n\n        Args:\n            ports_inversion_mask: list, Element takes one byte.\n                                        eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports_inversion([0x12,0x13])\n\n        ";
+            name = "set_ports_inversion";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 all pins\n\n        Args:\n            pins_dir_mask:  list, Element takes one byte.eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_pins_dir([0x12,0x13])\n\n        ";
+            name = "set_pins_dir";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 all pins.\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_pins_dir()\n            print(result)\n\n        ";
+            name = "get_pins_dir";
+        },
+                {
+            doc = "\n        Set the value of input port register.\n\n        Args:\n            ports_level_mask:   list, Element takes one byte.\n                                      eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports([0x12,0x13])\n\n        ";
+            name = "set_ports";
+        },
+                {
+            doc = "\n        Get the pin state of CAT9555\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            result = cat9555.get_pin_state(15)\n            print(result)\n\n        ";
+            name = "get_pin_state";
+        },
+                {
+            doc = "\n        Set the inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15], Pin id you can choose of cat9555.\n            is_inversion: boolean, [True, False], Set pin inversion like True or False.\n\n        Examples:\n            cat9555.set_pin_inversion(12,True)\n\n        ";
+            name = "set_pin_inversion";
+        },
+                {
+            doc = "\n        Set the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            level:    int, [0, 1],   set pin level like 0 or 1.\n\n        Examples:\n            cat9555.set_pin(12,1)\n\n        ";
+            name = "set_pin";
+        }
+    );
+    "io_exp6." =     (
+                {
+            doc = "\n        Get the value of input port register\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports()\n            print(result)\n\n        ";
+            name = "get_ports";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            dir:      string, ['output', 'input'], Set pin dir.\n\n        Examples:\n            cat9555.set_pin_dir(15,'output')\n\n        ";
+            name = "set_pin_dir";
+        },
+                {
+            doc = "\n        Get the ports state of CAT9555 pin\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_state()\n            print(result)\n\n        ";
+            name = "get_ports_state";
+        },
+                {
+            doc = "\n        CAT9555 read specific length datas from address\n\n        Args:\n            reg_addr:   hexmial, [0~0xFF], Read datas from this address.\n            rd_len:     int, [0~1024],     Length to read.\n\n        Returns:\n            list, [value, ...].\n\n        Examples:\n            rd_data = cat9555.read_register(0x00, 10)\n            print(rd_data)\n\n        ";
+            name = "read_register";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            string, ['output', 'input'].\n\n        Examples:\n            result = cat9555.get_pin_dir(15)\n            print(result)\n\n        ";
+            name = "get_pin_dir";
+        },
+                {
+            doc = "\n        Get the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            cat9555.get_pin(12)\n\n        ";
+            name = "get_pin";
+        },
+                {
+            doc = "\n        Get the polarity inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            boolean, [True, False].\n\n        Examples:\n            result = cat9555.get_pin_inversion(12)\n            print(result)\n\n        ";
+            name = "get_pin_inversion";
+        },
+                {
+            doc = "\n        Get the polarity inversion about all ports\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_ports_inversion()\n            print(result)\n\n        ";
+            name = "get_ports_inversion";
+        },
+                {
+            doc = "\n        CAT9555 write datas to address, support cross pages writing operation\n\n        Args:\n            reg_addr:    int, [0~1024], Write data to this address.\n            write_data:  list,          Data to write.\n\n        Examples:\n            wr_data = [0x01, 0x02, 0x03, 0x04]\n            cat9555.write_register(0x00, wr_data)\n\n        ";
+            name = "write_register";
+        },
+                {
+            doc = "\n        Set the polarity inversion.\n\n        Args:\n            ports_inversion_mask: list, Element takes one byte.\n                                        eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports_inversion([0x12,0x13])\n\n        ";
+            name = "set_ports_inversion";
+        },
+                {
+            doc = "\n        Set the direction of CAT9555 all pins\n\n        Args:\n            pins_dir_mask:  list, Element takes one byte.eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_pins_dir([0x12,0x13])\n\n        ";
+            name = "set_pins_dir";
+        },
+                {
+            doc = "\n        Get the direction of CAT9555 all pins.\n\n        Returns:\n            list.\n\n        Examples:\n            result = cat9555.get_pins_dir()\n            print(result)\n\n        ";
+            name = "get_pins_dir";
+        },
+                {
+            doc = "\n        Set the value of input port register.\n\n        Args:\n            ports_level_mask:   list, Element takes one byte.\n                                      eg:[0x12,0x13].\n\n        Examples:\n            cat9555.set_ports([0x12,0x13])\n\n        ";
+            name = "set_ports";
+        },
+                {
+            doc = "\n        Get the pin state of CAT9555\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n\n        Returns:\n            int, [0, 1].\n\n        Examples:\n            result = cat9555.get_pin_state(15)\n            print(result)\n\n        ";
+            name = "get_pin_state";
+        },
+                {
+            doc = "\n        Set the inversion of CAT9555 pin\n\n        Args:\n            pin_id:       int, [0~15], Pin id you can choose of cat9555.\n            is_inversion: boolean, [True, False], Set pin inversion like True or False.\n\n        Examples:\n            cat9555.set_pin_inversion(12,True)\n\n        ";
+            name = "set_pin_inversion";
+        },
+                {
+            doc = "\n        Set the level of CAT9555 pin\n\n        Args:\n            pin_id:   int, [0~15],   Pin id you can choose of cat9555.\n            level:    int, [0, 1],   set pin level like 0 or 1.\n\n        Examples:\n            cat9555.set_pin(12,1)\n\n        ";
+            name = "set_pin";
+        }
+    );
+    "io_table." =     (
+    );
+    "led." =     (
+                {
+            doc = "<null>";
+            name = setled;
+        },
+                {
+            doc = "<null>";
+            name = stopblink;
+        },
+                {
+            doc = "<null>";
+            name = startblink;
+        }
+    );
+    "ltc2309." =     (
+    );
+    "mcp47fe." =     (
+                {
+            doc = "\n        MCP47FE output voltage\n\n        Args:\n            channel:    int, [1, 2, 3, 4, 5, 6, 7, 8]\n            volt:       float/int, [DAC voltage], unit mV.\n\n        Examples:\n            mcp47fe.output_volt_dc(1, 1000)\n\n        ";
+            name = "output_volt_dc";
+        }
+    );
+    "ocp_status." =     (
+                {
+            doc = "\n        GPIO get pin level\n\n        Returns:\n            int, value.\n\n        Examples:\n            level = io.get_level()\n            print(level)\n\n        ";
+            name = "get_level";
+        },
+                {
+            doc = "\n        GPIO set pin direction\n\n        Args:\n            pin_dir:     string, [\"input\", \"output\"], Set the io direction.\n\n        Examples:\n            io.set_dir('input')\n\n        ";
+            name = "set_dir";
+        },
+                {
+            doc = "\n        GPIO set pin level\n\n        Args:\n            level:   int, [0], 1 is high level, 0 is low level.\n\n        Examples:\n            io.set_level(1)\n\n        ";
+            name = "set_level";
+        },
+                {
+            doc = "\n        GPIO get pin direction\n\n        Returns:\n            string, str.\n\n        Examples:\n            dir = io.get_dir()\n            print(dir)\n\n        ";
+            name = "get_dir";
+        }
+    );
+    "reset_all." =     (
+                {
+            doc = "\n        example: reset_reset()\n        ";
+            name = "reset_all";
+        },
+                {
+            doc = "<null>";
+            name = reset;
+        }
+    );
+    "server." =     (
+                {
+            doc = "<null>";
+            name = reset;
+        },
+                {
+            doc = "\n        Enable/disable server profiling;\n        Both for total handle time and function breakdown\n\n        :param breakdown: bool, default True; controls whether to profile server handle function\n                          and generate breakdown data for each function call\n        :param rtt: bool, default True; controls whether to calculate total server handle time;\n        :example:\n                 client.server_profile_enable()             # server profile will be enabled\n                 client.server_profile_enable(False, False) # server profile will be disabled\n        :return: 'done' for successfully setting. Do not explicitly return other value.\n        ";
+            name = "profile_enable";
+        },
+                {
+            doc = "<null>";
+            name = stop;
+        },
+                {
+            doc = "\n        get current rpc server log files in 1 tarball.\n\n        Args:\n            None\n\n        Return:\n            2-item tuple ('PASS', data) or (errmsg, '')\n            errmsg should be a string about failure reason.\n            data is encoded in base64; client will be responsible\n            for decoding it into origin data.\n        ";
+            name = "get_log";
+        },
+                {
+            doc = "\n        Client will use this as\n        1. server accessibility, like network disconnection\n        2. server mode check; only continue testing in 'normal' mode;\n        Server will put mode into 'dfu' during fwup in the future.\n        ";
+            name = mode;
+        },
+                {
+            doc = "\n        return profile statistics to client.\n\n        :return: Tuple, (breakdown, profile_result)\n            breakdown: dict; server main thread's cProfile stats; {} if not enabled.\n            profile_result: dict; end-to-end time of each phase data\n            format of breakdown dict:\n\n                key: function name including file path, like /root/zmq.py:send\n                value: dict{\n\n                    'ncall': int, number of function call profiled,\n\n                    'tot_avg': average time of the function, not including sub-func call\n\n                    'cum_avg': average time of the function, including sub-func call\n\n                    }\n\n            format of profile_result: dict{\n\n                'keys': list, keys in time sequence, like [start, step1, step2, step3]\n\n                'start': [t_rpc1, t_rpc2, ...]      # t_rpc is float() from time.time()\n\n                'step1': [t_rpc1, t_rpc2, ...]\n                ...\n\n                }\n\n                User software could use this dict to do further calculation,\n                like avg, rms, etc.\n        ";
+            name = "get_profile_stats";
+        },
+                {
+            doc = "\n        Setting RPC server logging level;\n\n        :param level: string in given list, string of level\n                      case insensitive; must be one of\n                      \"NOTSET\", \"INFO\", \"DEBUG\", \"WARNING\", \"ERROR\", \"FATAL\"\n        ";
+            name = "set_logging_level";
+        },
+                {
+            doc = "<null>";
+            name = "reset_log";
+        },
+                {
+            doc = "<null>";
+            name = "clear_profile_stats";
+        },
+                {
+            doc = "\n        Wrapper for dispatcher.all_methods()\n        ";
+            name = "all_methods";
+        }
+    );
+    "sib_eeprom." =     (
+                {
+            doc = "\n        CAT24CXX read specific length datas from address,\n        support cross pages reading operation\n\n        Args:\n            addr:      hexmial, [0~0xFF], Read datas from this address.\n            length:    int, [0~1024],     Length to read.\n\n        Returns:\n            list, [value, ...].\n\n        Examples:\n            result = cat24cxx.read(0x00, 10)\n            print(result)\n\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        CAT24CXX write datas to address, support cross pages writing operation\n\n        Args:\n            addr:       int, [0~1024], Write datas to this address.\n            data:       list,          Length to read.\n\n        Examples:\n            wr_data = [0x01, 0x02, 0x03, 0x04]\n            cat24cxx.write(0x00, wr_data)\n\n        ";
+            name = write;
+        }
+    );
+    "uart." =     (
+                {
+            doc = "\n        Uart close port immediately\n        ";
+            name = close;
+        },
+                {
+            doc = "\n        Uart read size bytes from the port. Note that data has been read is bytes.\n\n        Args:\n            size:        int, number of bytes to read. Default size is 1 byte.\n            timeout_s:   float, default 0, set a read timeout value.\n\n                            Posiible values for the parameter timeout_s which\n                            controls the behavior of read():\n\n                            - timeout_s = None: wait forever /utili\n                                requested numbeer of bytes are received.\n                            - timeout_s = 0: non-blocking mode, return\n                                immediately in any case, returning zero\n                                or more, up to the requested number of bytes\n                            - timeout_s = x: set timeout to x seconds(float allowed)\n                                return s immediately when\n                                the requested number of bytes are available,\n                                otherwise wait util the timeout_s expires and\n                                return all bytes that were received util then.\n\n        Returns:\n            list, list read from the port.\n\n        Examples:\n            message = uart_bus.read(10, 3)\n            print(message)\n\n        ";
+            name = "read_hex";
+        },
+                {
+            doc = "\n        Uart configuration function, use to config the Uart.\n\n        Args:\n            baudrate:    int, default 115200, baud rate such as 9600 or 115200 etc. Default baudrate is 115200.\n            data_bits:   int, default 8, number of data bits. Possible values: 5,6,7,8. Default data_bits is 8bit.\n            parity:      string, ['none', 'odd', 'even'], default 'none', enable parity checking, checking parity.\n            stop_bits:   float, default 1, number of stop bits. Possible values: 1,1.5,2.\n\n        Examples:\n            uart.config(115200, 8, 'none', 1)\n\n        ";
+            name = config;
+        },
+                {
+            doc = "\n        Uart write the bytes data to the port.\n\n        Args:\n            data:          list,  the list data to be write.\n            timeout_s:     float, set a write timeout value, default is blocking.\n\n        Returns:\n            int, value, number of bytes written.\n        Raises:\n            SerialTimeoutException:  In case a write timeout is configured for the port and the time\n                                     is exceeded.\n\n        Examples:\n            uart_bus.write_hex([1, 2, 3, 4])\n\n        ";
+            name = "write_hex";
+        },
+                {
+            doc = "\n        Open uart port and reset input/output buffer.\n        ";
+            name = open;
+        }
+    );
+    "uart_SoC." =     (
+                {
+            doc = "<null>";
+            name = open;
+        },
+                {
+            doc = "<null>";
+            name = stop;
+        },
+                {
+            doc = "<null>";
+            name = start;
+        },
+                {
+            doc = "\n        rpc service api, shutdown all uart service channels\n\n        Return:\n            'done' if everything is configured right, RPCError if some error raised\n        Examples:\n            # assume uart is an object of UartService already initialized\n            # assume rpc_client is an object of RPCClientWrapper\n            rpc_client.uart_shutdown_all()\n        ";
+            name = "shutdown_all";
+        },
+                {
+            doc = "<null>";
+            name = close;
+        },
+                {
+            doc = "<null>";
+            name = config;
+        }
+    );
+    "uart_dfu." =     (
+                {
+            doc = "\n\t    uart write hex\n        Args:\n            data:            int,   hex data\n            timeout_s:       int,      none\n        Example:\n          uart_write_hex(0x13)\n    \t";
+            name = "write_hex";
+        },
+                {
+            doc = "\n        uart read data\n        Args:\n            size:      int,     default 1024\n            timeout_s  int,      default 0\n\t\tExample:\n\t\t    uart_read()\n    \t";
+            name = read;
+        },
+                {
+            doc = "\n        Open uart port and reset input/output buffer.\n        Args:\n            none\n        Example:\n            uart_open()\n        ";
+            name = open;
+        },
+                {
+            doc = "<null>";
+            name = stop;
+        },
+                {
+            doc = "\n        uart write string\n        Args:\n            datastring:      string,   any words\n            timeout_s:       int,      none\n        Example:\n\t\t  uart_write(datastring)\n\t\t  uart_write(\"hello world\")\n    \t";
+            name = write;
+        },
+                {
+            doc = "<null>";
+            name = start;
+        },
+                {
+            doc = "\n        Uart close port immediately\n        Args:\n            none\n        Example:\n            uart_close()\n\n        ";
+            name = close;
+        },
+                {
+            doc = "\n        uart read data hex\n        Args:\n            size:      int,     default 1024\n            timeout_s  int,      default 0\n        Example:\n            read_hex()\n    \t";
+            name = "read_hex";
+        },
+                {
+            doc = "\n        uart config\n        Args:\n            name:   string,       uart device name or None. The port will open on object creation,\n                                                when port given. The port will not be open when port not given.\n                                                Default port is None.\n            baudrate:              int,          uart baud rate such as 9600 or 115200 etc. Default baudrate is 115200.\n            data_bits:              int,          number of data bits. Possible values: 5,6,7,8. Default data_bits is\n                                                8bit.\n            stop_bits:              float,        number of stop bits. Possible values: 1,1.5,2. Default stop_bits is 1.                                 \n            parity:                string,       enable parity checking. Possible values: ('none'/'odd'/'even'/\n                                                mark'/'space'). 'none' for no check 'odd' for odd check, 'even' for\n                                                even check. Default no check parity, 'mark' for parity bit is always 1,\n                                                'space' for parity bit is always 0.\n            timestamp:              string,     reserve\n \n    \tExample:\n\t\t    uart_config(UUT,1000000,8,1,none,OFF)\n\n    \t";
+            name = config;
+        }
+    );
+    "uart_test." =     (
+                {
+            doc = "\n        uart write string\n        Args:\n            datastring:      string,   any words\n            timeout_s:       int,      none\n        Example:\n            uart_write_read(datastring)\n            uart_write_read(\"hello world\")\n        ";
+            name = "write_read";
+        },
+                {
+            doc = "\n        uart read data\n        Args:\n            size:      int,     default 1024\n            timeout_s  int,      default 0\n        Example:\n            uart_read()\n        ";
+            name = read;
+        },
+                {
+            doc = "\n        Open uart port and reset input/output buffer.\n        Args:\n            none\n        Example:\n            uart_open()\n        ";
+            name = open;
+        },
+                {
+            doc = "\n        uart write string\n        Args:\n            datastring:      string,   any words\n            timeout_s:       int,      none\n        Example:\n            uart_write(datastring)\n            uart_write(\"hello world\")\n        ";
+            name = write;
+        },
+                {
+            doc = "\n        Uart close port immediately\n        Args:\n            none\n        Example:\n            uart_close()\n\n        ";
+            name = close;
+        },
+                {
+            doc = "\n        uart config\n        Args:\n            name:   string,       uart device name or None. The port will open on object creation,\n                                                when port given. The port will not be open when port not given.\n                                                Default port is None.\n            baudrate:              int,          uart baud rate such as 9600 or 115200 etc. Default baudrate is 115200.\n            data_bits:              int,          number of data bits. Possible values: 5,6,7,8. Default data_bits is\n                                                8bit.\n            stop_bits:              float,        number of stop bits. Possible values: 1,1.5,2. Default stop_bits is 1.                                 \n            parity:                string,       enable parity checking. Possible values: ('none'/'odd'/'even'/\n                                                mark'/'space'). 'none' for no check 'odd' for odd check, 'even' for\n                                                even check. Default no check parity, 'mark' for parity bit is always 1,\n                                                'space' for parity bit is always 0.\n            timestamp:              string,     reserve\n \n        Example:\n        uart_config(UUT,1000000,8,1,none,OFF)\n\n        ";
+            name = config;
+        }
+    );
+    "uut_detect." =     (
+                {
+            doc = "\n    \tread_Volt()\n    \t\n    \t";
+            name = "read_Volt";
+        }
+    );
+    "version." =     (
+                {
+            doc = "<null>";
+            name = version;
+        }
+    );
+}
