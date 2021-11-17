@@ -1,0 +1,17 @@
+
+[
+"adc.read_volt(CH0)",
+"Delay:0.2",
+"adc.read_volt(CH1)",
+"Delay:0.2",
+"adc.read_volt(CH2)",
+"Delay:0.2",
+"adc.read_volt(CH6)",
+"Delay:0.2"]
+
+
+
+
+
+
+

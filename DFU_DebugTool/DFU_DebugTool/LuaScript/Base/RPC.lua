@@ -37,10 +37,29 @@ function RPC.fixtureWirteRead (cmd, site , is_log)
     local rpc = RPC.object();
     if is_log == nil or is_log == true then ui.fixtureLog('site:'..tostring(site)..'--send_cmd:'..cmd,site) end
     
-    -- local result = rpc:fxitureWriteAndRead(cmd,site)
-    local result = 'site:'..tostring(site)..'--send_cmd:'..cmd,site
+    local result = rpc:fxitureWriteAndRead(cmd,site)
 
-    if is_log == nil or is_log == true then ui.fixtureLog('result:'..result,site) end
+    if is_log == nil or is_log == true then
+
+        if string.match(cmd,'read_volt%(CH') then--([%d%.]+) mv ACK%(DONE%)
+            local vol_str = string.match(result,'([%d%.]+) mv ACK%(DONE%)')
+            print('debug--'..cmd)
+            local vol = (tonumber(vol_str)+2)*1.5
+            local name = ""
+            if string.match(cmd,'read_volt%(CH0') then
+                name = 'vbatt'
+            elseif  string.match(cmd,'read_volt%(CH1') then
+                name = 'vbus'
+            elseif  string.match(cmd,'read_volt%(CH2') then
+                name = 'vcc_main'
+            elseif  string.match(cmd,'read_volt%(CH6') then
+                name = 'vcc_high'
+            end
+            result = name..':'..tostring(vol)
+      
+        end
+        ui.fixtureLog('result:'..result,site) 
+    end
     
     return result
 

@@ -12,8 +12,10 @@
 "io.set(bit9=1)",
 "Delay:0.2",
 "batt.volt_set(1900)",
-"io.get(bit16)",
+"Delay:0.01",
 "io.set(bit1=1)",
+"Delay:0.3",
+"io.get(bit16)",
 ]
 
 

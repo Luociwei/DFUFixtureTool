@@ -11,20 +11,20 @@ local dut = require("LuaScript/Tech/DutSequence")
 function loadPulgins()
 -- body
 
-    -- local isPingOk = ui.pingIP('169.254.1.32')
-    -- if isPingOk == false then
-    --     ui.alert("Error","ping 169.254.1.32 failed!!! Pls check the mix is ready?")
+    local isPingOk = ui.pingIP('169.254.1.32')
+    if isPingOk == false then
+        ui.alert("Error","ping 169.254.1.32 failed!!! Pls check the mix is ready?")
 
-    --     return nil
-    -- end
-    -- local ipPorts = hwio.ipPorts()
-    -- local rpc = RPCPlugin:rpcPluginConnect(ipPorts)
-    -- if rpc == nil then
-    --     ui.alert("Error","RPC Connect fail!!!")
+        return nil
+    end
+    local ipPorts = hwio.ipPorts()
+    local rpc = RPCPlugin:rpcPluginConnect(ipPorts)
+    if rpc == nil then
+        ui.alert("Error","RPC Connect fail!!!")
         
-    --     return nil
-    -- end
-    -- ui.alert("Warning","RPC Connect successful.")
+        return nil
+    end
+    ui.alert("Warning","RPC Connect successful.")
     -- local rpc = ''
     
     local Device = {}--- registered getDeviceInfo() method
@@ -65,12 +65,12 @@ local function regular (content, pattern)
 end
 
 local function getAllMethods ()
-    -- local all_monthed_cmd = 'server.all_methods()'
-    -- local result_all_monthed = rpc.fixtureWirteRead(all_monthed_cmd,1,false)
-    local result_all_monthed = ''
+    local all_monthed_cmd = 'server.all_methods()'
+    local result_all_monthed = rpc.fixtureWirteRead(all_monthed_cmd,1,false)
+    -- local result_all_monthed = ''
     if result_all_monthed == nil or result_all_monthed == '' then
         local resource_path = ui.appResourcePath()
-    -- local path = '/Users/ciweiluo/Desktop/all_method.txt'
+    -- local path1 = '/Users/ciweiluo/Desktop/all_method.txt'
         local path = resource_path..'/LuaScript/all_method.txt'
         -- print(path2)
         result_all_monthed = common.readFile(path)
@@ -84,21 +84,14 @@ end
 function appDidFinishLaunched()
 -- body
     -- print('0000000000')
-    -- rpc.uartOpen()
-    -- Power_OCP_Reset
-    -- local cmds = hwio.getCmds('Power_OCP_Reset')
-    
-    -- rpc.sendCmds(cmds,1)
-    -- rpc.sendCmds(cmds,2)
-    -- rpc.sendCmds(cmds,3)
-    -- rpc.sendCmds(cmds,4)
+    rpc.uartOpen()
 
     thread.DutReadThread_stop()
     thread.DutSensorThread_stop()
     thread.loopTestThread_stop()
     -- thread.CheckDutSensorThread_run()
     -- thread.DutReadThread_run()
-    -- fixutre.CheckSensor ()
+    fixutre.CheckSensor ()
 
     return getAllMethods ()
 
@@ -110,9 +103,9 @@ function appWillBeClose()
     thread.DutReadThread_stop()
     thread.DutSensorThread_stop()
     thread.loopTestThread_stop()
-    -- dut.fixture_resetAll ()
-    -- rpc.uartClose()
-    -- rpc.shutdown_all ()
+    --dut.fixture_resetAll ()
+    --rpc.uartClose()
+    --rpc.shutdown_all ()
 -- uart_SoC.shutdown_all()
     --ui.alert("Warning","APP will be close!!")
 end

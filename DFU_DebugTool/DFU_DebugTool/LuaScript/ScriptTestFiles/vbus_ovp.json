@@ -1,14 +1,16 @@
 
 [
-"mcp47fe.output_volt_dc(6,2350)",
+"mcp47fe.output_volt_dc(6,2450)",
 "io.set(bit24=1)",
 "Delay:0.5",
 "io.set(bit24=0)",
 "io.set(bit26=1)",
 "io.set(bit33=1)",
 "io.set(bit22=1)",
-"io.get(bit13)",
+"Delay:0.01",
 "io.set(bit2=1)",
+"Delay:0.3",
+"io.get(bit13)",
 ]
 
 

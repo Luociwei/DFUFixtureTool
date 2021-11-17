@@ -222,14 +222,15 @@ local function getFanSpeed(btnTitle,channel,speed)
     local cmds = hwio.getCmds('get_fan_speed')
 
     local site = rpc.getSite (channel)
-
+    local index_frist = site
+    local index_end = site
     if string.lower(channel) == 'all' then 
         index_frist = 1
         index_end = 4
     end
     for i=index_frist, index_end do
 
-        rpc.fixtureSendCmds(cmds,i,tostring(speed))
+        rpc.fixtureSendCmds(cmds,i,i)
 
     end
     return result_str

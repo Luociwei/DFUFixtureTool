@@ -1,0 +1,17 @@
+
+[
+"adc.read_volt(CH0)",---Vbatt *1.5
+"Delay:0.2",
+"adc.read_volt(CH1)",---Vbus *1.5
+"Delay:0.2",
+"adc.read_volt(CH2)",---vcc_main *1.5
+"Delay:0.2",
+"adc.read_volt(CH6)",------vcc_high *1.5
+"Delay:0.2"]
+
+
+
+
+
+
+

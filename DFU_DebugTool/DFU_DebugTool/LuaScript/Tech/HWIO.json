@@ -1,10 +1,5 @@
 {
     "monitorUart":1,
-    "Power_OCP_Reset" : [
-        "io.set(bit24=1)",
-        "delay:1",
-        "io.set(bit24=0)"
-  ],
     "rpc_connect":[
         "169.254.1.32:7801",
         "169.254.1.32:7802",
@@ -103,21 +98,25 @@
         "io.set(bit68=1;bit69=1;bit70=0)",
     ],
     "reset":[
-    	"io.set(bit24=1)",
-    	"Delay:0.05",
-    	"batt.volt_set(0)",
-    	"reset_all.reset()",
-    	"io.set(bit49=0;bit50=1;bit51=1)",
-    	"io.set(bit27=1;bit28=0;bit29=0)",
-    	"fan.speed_set(4000,0)"
+        "io.set(bit24=1)",
+        "Delay:0.05",
+        "batt.volt_set(0)",
+        "reset_all.reset()",
+        "io.set(bit49=0;bit50=1;bit51=1)",
+        "io.set(bit52=1;bit53=1;bit54=1)",
+        "io.set(bit55=1;bit56=1;bit57=1)",
+        "io.set(bit65=1;bit66=1;bit67=1)",
+        "io.set(bit68=1;bit69=1;bit70=1)",
+        "io.set(bit27=1;bit28=0;bit29=0)",
+        "fan.speed_set(4000,0)",
     ],
     "set_fan_speed":[
-        "io.set(bit27=1;bit29=1)",
+        "io.set(bit29=1)",
         "Delay:0.2",
         "fan.speed_set(4000,?)",
     ],
     "get_fan_speed":[
-        "io.set(bit27=1)",
+   
         "Delay:0.2",
         "fan.speed_get(?)",
     ],
@@ -125,7 +124,7 @@
         "io.set(bit24=1)",
         "batt.volt_set(0)",
         "reset_all.reset()",
-        "io.set(bit27=1;bit28=1;bit29=0)",
+        "io.set(bit28=1;bit29=0)",
         "batt.volt_set(0)",
         "reset_all.reset()",
         "io.set(bit28=0;bit39=0;bit24=0;bit40=0;bit34=0;bit22=0;bit26=0;bit30=1;bit42=1;bit43=1)",
@@ -133,7 +132,7 @@
         "io.set(bit30=0;bit42=0;bit43=0)",
         "batt.volt_set(4200)",
         "io.set(bit39=1;bit24=1;bit40=1;bit34=1;bit26=1;bit22=1)",
-        "io.set(bit27=1;bit29=1)",
+        "io.set(bit29=1)",
         "fan.speed_set(4000,0)",
 
     ],
