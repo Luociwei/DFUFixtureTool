@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "711A342A1DC3539000F5B5D2"
-               BuildableName = "DFU_DebugTool.app"
-               BlueprintName = "DFU_DebugTool"
-               ReferencedContainer = "container:DFU_DebugTool.xcodeproj">
+               BuildableName = "DebugTool.app"
+               BlueprintName = "DebugTool"
+               ReferencedContainer = "container:DebugTool.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -27,19 +27,17 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
-      <Testables>
-      </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "711A342A1DC3539000F5B5D2"
-            BuildableName = "DFU_DebugTool.app"
-            BlueprintName = "DFU_DebugTool"
-            ReferencedContainer = "container:DFU_DebugTool.xcodeproj">
+            BuildableName = "DebugTool.app"
+            BlueprintName = "DebugTool"
+            ReferencedContainer = "container:DebugTool.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <Testables>
+      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -56,13 +54,11 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "711A342A1DC3539000F5B5D2"
-            BuildableName = "DFU_DebugTool.app"
-            BlueprintName = "DFU_DebugTool"
-            ReferencedContainer = "container:DFU_DebugTool.xcodeproj">
+            BuildableName = "DebugTool.app"
+            BlueprintName = "DebugTool"
+            ReferencedContainer = "container:DebugTool.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -75,9 +71,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "711A342A1DC3539000F5B5D2"
-            BuildableName = "DFU_DebugTool.app"
-            BlueprintName = "DFU_DebugTool"
-            ReferencedContainer = "container:DFU_DebugTool.xcodeproj">
+            BuildableName = "DebugTool.app"
+            BlueprintName = "DebugTool"
+            ReferencedContainer = "container:DebugTool.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

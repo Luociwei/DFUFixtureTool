@@ -107,7 +107,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		711A342B1DC3539000F5B5D2 /* DFU_DebugTool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DFU_DebugTool.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		711A342B1DC3539000F5B5D2 /* DebugTool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DebugTool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		711A342E1DC3539000F5B5D2 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		711A342F1DC3539000F5B5D2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		711A34321DC3539000F5B5D2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -286,7 +286,7 @@
 				BA491CDB270CA665008EF366 /* CwGeneralManagerFrameWork.framework */,
 				BAD8596D26FAEAAC0019A69B /* libDFUFixture.dylib */,
 				BA37725926ECF24000ACB165 /* LuaCore */,
-				711A342D1DC3539000F5B5D2 /* DFU_DebugTool */,
+				711A342D1DC3539000F5B5D2 /* DebugTool */,
 				711A342C1DC3539000F5B5D2 /* Products */,
 				BAB4314625B328C1003F0AFB /* Frameworks */,
 			);
@@ -295,12 +295,12 @@
 		711A342C1DC3539000F5B5D2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				711A342B1DC3539000F5B5D2 /* DFU_DebugTool.app */,
+				711A342B1DC3539000F5B5D2 /* DebugTool.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		711A342D1DC3539000F5B5D2 /* DFU_DebugTool */ = {
+		711A342D1DC3539000F5B5D2 /* DebugTool */ = {
 			isa = PBXGroup;
 			children = (
 				BA37732426EE254300ACB165 /* LuaScript */,
@@ -336,7 +336,7 @@
 				711A343C1DC3539000F5B5D2 /* Info.plist */,
 				711A34311DC3539000F5B5D2 /* Supporting Files */,
 			);
-			path = DFU_DebugTool;
+			path = DebugTool;
 			sourceTree = "<group>";
 		};
 		711A34311DC3539000F5B5D2 /* Supporting Files */ = {
@@ -519,9 +519,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		711A342A1DC3539000F5B5D2 /* DFU_DebugTool */ = {
+		711A342A1DC3539000F5B5D2 /* DebugTool */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 711A343F1DC3539000F5B5D2 /* Build configuration list for PBXNativeTarget "DFU_DebugTool" */;
+			buildConfigurationList = 711A343F1DC3539000F5B5D2 /* Build configuration list for PBXNativeTarget "DebugTool" */;
 			buildPhases = (
 				711A34271DC3539000F5B5D2 /* Sources */,
 				711A34281DC3539000F5B5D2 /* Frameworks */,
@@ -532,9 +532,9 @@
 			);
 			dependencies = (
 			);
-			name = DFU_DebugTool;
-			productName = DFU_DebugTool;
-			productReference = 711A342B1DC3539000F5B5D2 /* DFU_DebugTool.app */;
+			name = DebugTool;
+			productName = DebugTool;
+			productReference = 711A342B1DC3539000F5B5D2 /* DebugTool.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -552,7 +552,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 711A34261DC3539000F5B5D2 /* Build configuration list for PBXProject "DFU_DebugTool" */;
+			buildConfigurationList = 711A34261DC3539000F5B5D2 /* Build configuration list for PBXProject "DebugTool" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -566,7 +566,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				711A342A1DC3539000F5B5D2 /* DFU_DebugTool */,
+				711A342A1DC3539000F5B5D2 /* DebugTool */,
 			);
 		};
 /* End PBXProject section */
@@ -775,11 +775,11 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = DFU_DebugTool/Info.plist;
+				INFOPLIST_FILE = DebugTool/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = app.io.DFU_DebugTool;
+				PRODUCT_BUNDLE_IDENTIFIER = app.io.DebugTool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -791,11 +791,11 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = DFU_DebugTool/Info.plist;
+				INFOPLIST_FILE = DebugTool/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = app.io.DFU_DebugTool;
+				PRODUCT_BUNDLE_IDENTIFIER = app.io.DebugTool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -803,7 +803,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		711A34261DC3539000F5B5D2 /* Build configuration list for PBXProject "DFU_DebugTool" */ = {
+		711A34261DC3539000F5B5D2 /* Build configuration list for PBXProject "DebugTool" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				711A343D1DC3539000F5B5D2 /* Debug */,
@@ -812,7 +812,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		711A343F1DC3539000F5B5D2 /* Build configuration list for PBXNativeTarget "DFU_DebugTool" */ = {
+		711A343F1DC3539000F5B5D2 /* Build configuration list for PBXNativeTarget "DebugTool" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				711A34401DC3539000F5B5D2 /* Debug */,
