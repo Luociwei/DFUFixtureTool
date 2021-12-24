@@ -682,18 +682,18 @@
                 <box fixedFrame="YES" boxType="oldStyle" borderType="line" title="Send Command" translatesAutoresizingMaskIntoConstraints="NO" id="HqN-S5-h3s" userLabel="State">
                     <rect key="frame" x="676" y="7" width="512" height="371"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
-                    <view key="contentView" id="Gzv-s9-6wf">
+                    <view key="contentView" ambiguous="YES" id="Gzv-s9-6wf">
                         <rect key="frame" x="1" y="1" width="510" height="355"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView fixedFrame="YES" borderType="line" autohidesScrollers="YES" horizontalLineScroll="77" horizontalPageScroll="10" verticalLineScroll="77" verticalPageScroll="10" usesPredominantAxisScrolling="NO" scrollerKnobStyle="light" translatesAutoresizingMaskIntoConstraints="NO" id="BNf-yM-qFC" userLabel="editTableview">
                                 <rect key="frame" x="0.0" y="-4" width="512" height="278"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <clipView key="contentView" id="R8v-LX-wdi">
+                                <clipView key="contentView" ambiguous="YES" id="R8v-LX-wdi">
                                     <rect key="frame" x="1" y="1" width="510" height="276"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="75" rowSizeStyle="automatic" headerView="dc1-q5-DoB" viewBased="YES" id="oLY-QO-sms">
+                                        <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="75" rowSizeStyle="automatic" headerView="dc1-q5-DoB" viewBased="YES" id="oLY-QO-sms">
                                             <rect key="frame" x="0.0" y="0.0" width="510" height="251"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
